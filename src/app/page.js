@@ -278,7 +278,7 @@ export default function HeroVeryPosta() {
             alt="VeryPosta - Franchising multiservizi innovativo con supporto reale e formazione continua"
             width={1000}
             height={1000}
-            className="w-[700px] sm:w-[700px] lg:w-[700px] xl:w-[1500px] h-auto drop-shadow-2xl parallax-image hero-img"
+            className="w-[700px] sm:w-[700px] lg:w-[700px] xl:w-[1600px] h-auto drop-shadow-2xl parallax-image hero-img"
             priority
           />
         </ScaleIn>
