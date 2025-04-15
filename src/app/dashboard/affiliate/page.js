@@ -3,15 +3,122 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ServicePanel from '../../components/ServicePanel';
+import { toast } from 'react-hot-toast';
 
 export default function AffiliateDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newService, setNewService] = useState({
+    service_type: '',
+    client_name: '',
+    client_email: '',
+    client_phone: '',
+    amount: '',
+    notes: ''
+  });
   
-  // Dati di esempio per la dashboard
-  const [dashboardData, setDashboardData] = useState({
+  // Funzione per caricare i dati della dashboard
+  const fetchDashboardData = async (token) => {
+    try {
+      const response = await fetch('/api/affiliate/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nel caricamento dei dati');
+      }
+      
+      setDashboardData(data.data);
+    } catch (error) {
+      console.error('Errore nel caricamento della dashboard:', error);
+      setError(error.message);
+    }
+  };
+  
+  // Funzione per registrare un nuovo servizio
+  const handleServiceSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      const response = await fetch('/api/affiliate/dashboard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newService)
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nella registrazione del servizio');
+      }
+      
+      // Reset del form
+      setNewService({
+        service_type: '',
+        client_name: '',
+        client_email: '',
+        client_phone: '',
+        amount: '',
+        notes: ''
+      });
+      
+      // Aggiorna i dati della dashboard
+      fetchDashboardData(token);
+      
+      toast.success('Servizio registrato con successo!');
+    } catch (error) {
+      console.error('Errore nella registrazione del servizio:', error);
+      toast.error(error.message || 'Errore nella registrazione del servizio');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Funzione per segnare una notifica come letta
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      const response = await fetch('/api/affiliate/dashboard', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ notification_id: notificationId })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nell\'aggiornamento della notifica');
+      }
+      
+      // Aggiorna i dati della dashboard
+      fetchDashboardData(token);
+    } catch (error) {
+      console.error('Errore nell\'aggiornamento della notifica:', error);
+      toast.error(error.message || 'Errore nell\'aggiornamento della notifica');
+    }
+  };
+  
+  // Dati di esempio per la dashboard (fallback se il caricamento fallisce)
+  const [dashboardData, setDashboardData]
+   = useState({
     stats: {
       totalServices: 156,
       pendingRequests: 8,
@@ -57,15 +164,15 @@ export default function AffiliateDashboard() {
       }
       
       setUserData(parsedUserData);
+      
+      // Carica i dati della dashboard dal backend
+      fetchDashboardData(token);
     } catch (error) {
       console.error('Errore nel parsing dei dati utente:', error);
       router.push('/');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
-    
-    // In un'implementazione reale, qui si caricherebbero i dati dal backend
-    // fetchDashboardData(token);
   }, [router]);
 
   const handleLogout = () => {
@@ -184,24 +291,40 @@ export default function AffiliateDashboard() {
           {activeTab === 'overview' && (
             <>
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="text-gray-500 text-sm mb-1">Servizi Totali</div>
-                  <div className="text-3xl font-bold">{dashboardData.stats.totalServices}</div>
+              {error ? (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                  <p>{error}</p>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="text-gray-500 text-sm mb-1">Richieste in Attesa</div>
-                  <div className="text-3xl font-bold">{dashboardData.stats.pendingRequests}</div>
+              ) : dashboardData ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="text-gray-500 text-sm mb-1">Servizi Totali</div>
+                    <div className="text-3xl font-bold">{dashboardData.stats.totalServices}</div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="text-gray-500 text-sm mb-1">Richieste in Attesa</div>
+                    <div className="text-3xl font-bold">{dashboardData.stats.pendingRequests}</div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="text-gray-500 text-sm mb-1">Completati Oggi</div>
+                    <div className="text-3xl font-bold">{dashboardData.stats.completedToday}</div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="text-gray-500 text-sm mb-1">Fatturato Mensile</div>
+                    <div className="text-3xl font-bold">{dashboardData.stats.monthlyRevenue}</div>
+                  </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="text-gray-500 text-sm mb-1">Completati Oggi</div>
-                  <div className="text-3xl font-bold">{dashboardData.stats.completedToday}</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-white rounded-xl shadow-sm p-6 animate-pulse">
+                      <div className="h-2 bg-gray-200 rounded w-1/3 mb-3"></div>
+                      <div className="h-6 bg-gray-200 rounded w-1/4 mb-2"></div>
+                      <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
                 </div>
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="text-gray-500 text-sm mb-1">Fatturato Mensile</div>
-                  <div className="text-3xl font-bold">{dashboardData.stats.monthlyRevenue}</div>
-                </div>
-              </div>
+              )}
   
               {/* Recent Services */}
               <div className="bg-white rounded-xl shadow-sm p-6">
@@ -214,29 +337,40 @@ export default function AffiliateDashboard() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importo</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commissione</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stato</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {dashboardData.recentServices.map((service) => (
-                        <tr key={service.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1d3a6b]">{service.id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.type}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.client}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.date}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              service.status === 'Completato'
-                                ? 'bg-green-100 text-green-800'
-                                : service.status === 'In elaborazione'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {service.status}
-                            </span>
+                      {dashboardData && dashboardData.recentServices && dashboardData.recentServices.length > 0 ? (
+                        dashboardData.recentServices.map((service) => (
+                          <tr key={service.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1d3a6b]">{service.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.type}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.client}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.amount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{service.commission}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                service.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                service.status === 'cancelled' ? 'bg-red-100 text-red-800' : 
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {service.status === 'completed' ? 'Completato' : 
+                                 service.status === 'cancelled' ? 'Annullato' : 'In attesa'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
+                            {error ? 'Errore nel caricamento dei servizi' : 'Nessun servizio recente'}
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -246,17 +380,31 @@ export default function AffiliateDashboard() {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold mb-4">Notifiche</h2>
                 <div className="space-y-4">
-                  {dashboardData.notifications.map((notification) => (
-                    <div key={notification.id} className={`p-4 rounded-lg border-l-4 ${
-                      notification.read ? 'border-gray-300 bg-gray-50' : 'border-[#ebd00b] bg-yellow-50'
-                    }`}>
-                      <div className="flex justify-between">
-                        <h3 className="font-semibold">{notification.title}</h3>
-                        <span className="text-sm text-gray-500">{notification.date}</span>
+                  {dashboardData && dashboardData.notifications && dashboardData.notifications.length > 0 ? (
+                    dashboardData.notifications.map((notification) => (
+                      <div key={notification.id} className={`p-4 rounded-lg border-l-4 ${
+                        notification.read ? 'border-gray-300 bg-gray-50' : 'border-[#ebd00b] bg-yellow-50'
+                      }`}>
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold">{notification.title}</h3>
+                          <span className="text-sm text-gray-500">{notification.date}</span>
+                        </div>
+                        <p className="text-gray-600 mt-1">{notification.message}</p>
+                        {!notification.read && (
+                          <button 
+                            onClick={() => markNotificationAsRead(notification.id)}
+                            className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                          >
+                            Segna come letta
+                          </button>
+                        )}
                       </div>
-                      <p className="text-gray-600 mt-1">{notification.message}</p>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-sm text-gray-500">
+                      {error ? 'Errore nel caricamento delle notifiche' : 'Nessuna notifica'}
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </>
@@ -266,6 +414,99 @@ export default function AffiliateDashboard() {
           {activeTab === 'services' && (
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-bold mb-6">Gestione Servizi</h2>
+              
+              {/* Form per registrare un nuovo servizio */}
+              <div className="mb-8 border-b pb-8">
+                <h3 className="text-lg font-medium mb-4">Registra Nuovo Servizio</h3>
+                <form onSubmit={handleServiceSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tipo di Servizio *</label>
+                      <select 
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        value={newService.service_type}
+                        onChange={(e) => setNewService({...newService, service_type: e.target.value})}
+                        required
+                      >
+                        <option value="">Seleziona un servizio</option>
+                        <option value="Spedizione">Spedizione</option>
+                        <option value="Energia">Energia</option>
+                        <option value="SPID">SPID</option>
+                        <option value="PEC">PEC</option>
+                        <option value="Firma Digitale">Firma Digitale</option>
+                        <option value="Consulenza">Consulenza</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Importo (€) *</label>
+                      <input 
+                        type="number" 
+                        step="0.01"
+                        min="0"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        value={newService.amount}
+                        onChange={(e) => setNewService({...newService, amount: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nome Cliente *</label>
+                      <input 
+                        type="text" 
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        value={newService.client_name}
+                        onChange={(e) => setNewService({...newService, client_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Cliente</label>
+                      <input 
+                        type="email" 
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        value={newService.client_email}
+                        onChange={(e) => setNewService({...newService, client_email: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Telefono Cliente</label>
+                      <input 
+                        type="tel" 
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        value={newService.client_phone}
+                        onChange={(e) => setNewService({...newService, client_phone: e.target.value})}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                      <textarea 
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
+                        rows="3"
+                        value={newService.notes}
+                        onChange={(e) => setNewService({...newService, notes: e.target.value})}
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <button 
+                      type="submit" 
+                      className="bg-[#1d3a6b] text-white px-4 py-2 rounded-md hover:bg-[#152c52] focus:outline-none focus:ring-2 focus:ring-[#1d3a6b] focus:ring-opacity-50 flex items-center"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Registrazione...
+                        </>
+                      ) : 'Registra Servizio'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+              
               <p className="text-gray-600 mb-8">Questa sezione ti permette di gestire tutti i servizi offerti dal tuo punto VeryPosta.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-gray-50 rounded-xl p-6 hover:shadow-md transition">

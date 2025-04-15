@@ -240,7 +240,7 @@ export default function HeroVeryPosta() {
     </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center pt-40 px-6 sm:px-10 lg:px-12 max-w-[1700px] mx-auto gap-16 lg:gap-20 relative">
+      <section className="min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center pt-40 px-6 sm:px-10 lg:px-12 max-w-[1500px] mx-auto gap-16 lg:gap-20 relative">
         {/* Testi */}
         <FadeIn direction="left" delay={3}>
           <div className="text-center lg:text-left">
@@ -278,7 +278,7 @@ export default function HeroVeryPosta() {
             alt="VeryPosta - Franchising multiservizi innovativo con supporto reale e formazione continua"
             width={1000}
             height={1000}
-            className="w-[700px] sm:w-[700px] lg:w-[700px] xl:w-[1600px] h-auto drop-shadow-2xl parallax-image hero-img"
+            className="w-[700px] sm:w-[700px] lg:w-[700px] xl:w-[1200px] h-auto drop-shadow-2xl parallax-image hero-img"
             priority
           />
         </ScaleIn>
@@ -369,9 +369,9 @@ export default function HeroVeryPosta() {
 
 
 
-  <div className="absolute h-50 w-full overflow-hidden leading-none z-0 rotate">
+  <div className="absolute h-90 w-full overflow-hidden leading-none z-0 rotate">
     <svg
-      viewBox="0 0 1440 180"
+      viewBox="0 14 1440 200"
       className="w-full "
       preserveAspectRatio="none"
     

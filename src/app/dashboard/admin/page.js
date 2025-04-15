@@ -146,6 +146,13 @@ export default function AdminDashboard() {
                   <span className="mr-3">🛠️</span>
                   Servizi
                 </button>
+                <Link 
+                  href="/dashboard/contatti"
+                  className="w-full text-left px-4 py-2 rounded-lg flex items-center hover:bg-gray-50"
+                >
+                  <span className="mr-3">✉️</span>
+                  Gestione Contatti
+                </Link>
                 <button 
                   onClick={() => setActiveTab('finance')} 
                   className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'finance' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
