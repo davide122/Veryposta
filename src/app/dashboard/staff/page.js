@@ -1,4 +1,4 @@
-\"use client";
+"use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -440,4 +440,29 @@ export default function StaffDashboard() {
                       <input 
                         type="text" 
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
-                        placeholder="Inserisci il titolo
+                        placeholder="Inserisci il titolo                        placeholder="Inserisci il titolo"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Contenuto</label>
+                      <textarea 
+                        rows="4"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+                        placeholder="Scrivi qui il contenuto della comunicazione..."
+                      ></textarea>
+                    </div>
+                    <div className="flex justify-end">
+                      <button className="bg-[#1d3a6b] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[#16305a] transition">
+                        Pubblica Comunicazione
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
