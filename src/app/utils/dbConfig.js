@@ -4,12 +4,17 @@ import { Pool } from 'pg';
  * Configurazione del pool di connessione al database PostgreSQL su Neon
  * Utilizza le variabili d'ambiente per la connessione sicura
  */
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+let pool;
+
+if (typeof window === 'undefined') {
+  // Server-side only
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+}
 
 /**
  * Esegue una query sul database e restituisce i risultati
