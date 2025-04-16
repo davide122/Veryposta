@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    
     eslint: {
         ignoreDuringBuilds: true,
     },
@@ -20,7 +21,7 @@ const nextConfig = {
     // Skip static generation for dynamic routes during build
     output: 'standalone',
     experimental: {
-        serverActions: true
+        serverActions: {}
     }
 };
 
