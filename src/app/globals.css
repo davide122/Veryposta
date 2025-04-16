@@ -61,3 +61,8 @@ body {
 .rotate{
   rotate: 180deg;
 }
+
+html,
+body {
+  overflow-x: hidden;
+}

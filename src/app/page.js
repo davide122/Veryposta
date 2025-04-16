@@ -9,6 +9,8 @@ import LocationMap from "./components/LocationMap";
 import ROICalculator from "./components/ROICalculator";
 import FAQSection from "./components/FAQSection";
 import TestimonialsSection from "./components/TestimonialsSection";
+import VantaggiSection from "./components/VantaggiSection";
+import ContactSection from "./components/ContactSection";
 import { FadeIn, ScaleIn, SlideIn, Parallax, HoverEffect } from "./components/AnimationProvider";
 import { useInView } from "react-intersection-observer";
 import { useSpring, animated, config } from "@react-spring/web";
@@ -16,6 +18,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
+import ServiceModal from "./components/ServiceModal";
 
 // Componente per i meta tag delle sezioni
 const SectionMeta = ({ id, title, description }) => {
@@ -32,7 +35,9 @@ export default function HeroVeryPosta() {
   const [isOpen, setIsOpen] = useState(false);
   const [showAffiliateModal, setShowAffiliateModal] = useState(false);
   const [showLocationMap, setShowLocationMap] = useState(false);
-  const [showROICalculator, setshowROICalculator]=useState(false)
+  const [showROICalculator, setshowROICalculator]=useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [currentService, setCurrentService] = useState(null);
   // Animazione per lo scroll indicator
   const [scrollIndicator, scrollIndicatorApi] = useSpring(() => ({
     opacity: 1,
@@ -164,83 +169,113 @@ export default function HeroVeryPosta() {
   };
 
   return (
-    <main className="bg-gradient-to-br from-white to-[#f6f7fb] font-sans text-[#1d3a6b]">
+    <main className="bg-gradient-to-br from-white to-[#f6f7fb] font-sans text-[#1d3a6b] ">
 
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/70 border-b border-gray-200 shadow-sm">
-      <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-12 py-6 flex justify-between items-center">
-        
+      <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-200">
+      <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-12 py-5 flex justify-between items-center">
+
         {/* Logo */}
         <div className="text-3xl font-black tracking-tight">
           <span className="text-[#1d3a6b]">Very</span>
           <span className="text-[#ebd00b]">Posta</span>
         </div>
 
-        {/* Desktop Menu */}
+        {/* Menu Desktop */}
         <div className="hidden lg:flex gap-10 font-poppins text-lg font-semibold items-center">
-          <a onClick={() => scrollToSection('perche')} className="hover:text-[#ebd00b] transition cursor-pointer">Perché</a>
-          <a onClick={() => scrollToSection('servizi')} className="hover:text-[#ebd00b] transition cursor-pointer">Servizi</a>
-          <a onClick={() => scrollToSection('vantaggi')} className="hover:text-[#ebd00b] transition cursor-pointer">Vantaggi</a>
-          <a onClick={() => scrollToSection('media')} className="hover:text-[#ebd00b] transition cursor-pointer">Gallery</a>
-          <a onClick={() => scrollToSection('contatti')} className="hover:text-[#ebd00b] transition cursor-pointer">Contatti</a>
+          <a onClick={() => scrollToSection("perche")} className="hover:text-[#ebd00b] cursor-pointer transition">Perché</a>
+          <a onClick={() => scrollToSection("servizi")} className="hover:text-[#ebd00b] cursor-pointer transition">Servizi</a>
+          <a onClick={() => scrollToSection("vantaggi")} className="hover:text-[#ebd00b] cursor-pointer transition">Vantaggi</a>
+          <a onClick={() => scrollToSection("media")} className="hover:text-[#ebd00b] cursor-pointer transition">Gallery</a>
+          <a onClick={() => scrollToSection("contatti")} className="hover:text-[#ebd00b] cursor-pointer transition">Contatti</a>
         </div>
 
-        {/* Desktop CTA */}
+        {/* CTA Desktop */}
         <div className="hidden lg:flex gap-4 items-center">
-          <Link 
-            href="/accesso" 
-            className="text-[#1d3a6b] hover:text-[#ebd00b] transition font-semibold"
-          >
+          <Link href="/accesso" className="text-[#1d3a6b] hover:text-[#ebd00b] transition font-semibold">
             Area Riservata
           </Link>
-          <button 
-            onClick={() => setShowAffiliateModal(true)} 
+          <button
+            onClick={() => setShowAffiliateModal(true)}
             className="bg-[#ebd00b] text-[#1d3a6b] px-7 py-3 text-lg rounded-full font-bold hover:bg-yellow-400 transition"
           >
             Diventa Affiliato
           </button>
         </div>
 
-        {/* Mobile menu toggle */}
+        {/* Menu toggle Mobile */}
         <button
           className="lg:hidden text-3xl text-[#1d3a6b] font-bold"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(true)}
+          aria-label="Apri menu mobile"
         >
           ☰
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Menu Mobile */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 bg-white z-40 flex flex-col items-center justify-center gap-8 text-2xl font-poppins font-semibold text-[#1d3a6b] animate-fade-in">
-          <button className="absolute top-6 right-6 text-4xl" onClick={() => setIsOpen(false)}>×</button>
-          <a onClick={() => scrollToSection('perche')} className="cursor-pointer">Perché</a>
-          <a onClick={() => scrollToSection('servizi')} className="cursor-pointer">Servizi</a>
-          <a onClick={() => scrollToSection('vantaggi')} className="cursor-pointer">Vantaggi</a>
-          <a onClick={() => scrollToSection('media')} className="cursor-pointer">Gallery</a>
-          <a onClick={() => scrollToSection('contatti')} className="cursor-pointer">Contatti</a>
-          <Link 
-            href="/accesso" 
-            className="text-[#1d3a6b] hover:text-[#ebd00b] transition font-semibold"
-            onClick={() => setIsOpen(false)}
-          >
-            Area Riservata
-          </Link>
-          <button 
-            onClick={() => {
-              setIsOpen(false);
-              setShowAffiliateModal(true);
-            }} 
-            className="bg-[#ebd00b] text-[#1d3a6b] px-6 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition"
-          >
-            Diventa Affiliato
-          </button>
+        <div className="lg:hidden fixed inset-0 z-[9999] bg-white text-[#1d3a6b] flex flex-col justify-between px-6 py-10 overflow-y-auto shadow-2xl animate-fade-in">
+          
+          {/* Pulsante chiudi */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-5xl font-bold hover:text-[#ebd00b] transition"
+              aria-label="Chiudi menu"
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Link sezione */}
+          <nav className="flex flex-col items-center gap-6 mt-10 text-2xl font-semibold font-poppins">
+            {[
+              { label: "Perché", id: "perche" },
+              { label: "Servizi", id: "servizi" },
+              { label: "Vantaggi", id: "vantaggi" },
+              { label: "Gallery", id: "media" },
+              { label: "Contatti", id: "contatti" }
+            ].map(({ label, id }) => (
+              <a
+                key={id}
+                onClick={() => {
+                  scrollToSection(id);
+                  setIsOpen(false);
+                }}
+                className="cursor-pointer hover:text-[#ebd00b] transition"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          {/* CTA finali */}
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <Link
+              href="/accesso"
+              onClick={() => setIsOpen(false)}
+              className="text-lg font-semibold hover:text-[#ebd00b] transition"
+            >
+              Area Riservata
+            </Link>
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setShowAffiliateModal(true);
+              }}
+              className="bg-[#ebd00b] text-[#1d3a6b] px-7 py-3 rounded-full font-bold text-lg hover:bg-yellow-400 transition w-full max-w-xs"
+            >
+              Diventa Affiliato
+            </button>
+          </div>
         </div>
       )}
     </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center pt-40 px-6 sm:px-10 lg:px-12 max-w-[1500px] mx-auto gap-16 lg:gap-20 relative">
+      
+      <section className="min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center pt-40 px-6 sm:px-10 lg:px-12 max-w-[1400px] mx-auto gap-16 lg:gap-20 relative">
         {/* Testi */}
         <FadeIn direction="left" delay={3}>
           <div className="text-center lg:text-left">
@@ -298,7 +333,7 @@ export default function HeroVeryPosta() {
 
 
       {/* Perché VeryPosta */}
-      <section id="perche" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1600px] mx-auto text-[#1d3a6b]">
+      <section id="perche" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
             Perché scegliere <span className="text-[#ebd00b]">VeryPosta</span>
@@ -335,7 +370,7 @@ export default function HeroVeryPosta() {
         </div>
       </section>
 
-      <section id="servizi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1600px] mx-auto text-[#1d3a6b]">
+      <section id="servizi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
   <div className="text-center mb-16">
     <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
       I nostri <span className="text-[#ebd00b]">Servizi</span>
@@ -358,7 +393,14 @@ export default function HeroVeryPosta() {
       { name: "Pratiche", icon: "📋" },
       { name: "Altri Servizi", icon: "🔍" }
     ].map((s, i) => (
-      <div key={i} className="bg-white p-6 rounded-3xl shadow-md hover:shadow-lg transition-all">
+      <div 
+        key={i} 
+        className="bg-white p-6 rounded-3xl shadow-md hover:shadow-lg transition-all cursor-pointer"
+        onClick={() => {
+          setCurrentService(s);
+          setShowServiceModal(true);
+        }}
+      >
         <div className="text-3xl sm:text-4xl mb-3">{s.icon}</div>
         <p className="font-poppins text-sm sm:text-base text-[#1d3a6b] font-medium">{s.name}</p>
       </div>
@@ -369,22 +411,8 @@ export default function HeroVeryPosta() {
 
 
 
-  <div className="absolute h-90 w-full overflow-hidden leading-none z-0 rotate">
-    <svg
-      viewBox="0 14 1440 200"
-      className="w-full "
-      preserveAspectRatio="none"
-    
-    >
-      <path
-        fill="#ebd00b"
-        fillOpacity="1"
-        d="M0,64L80,69.3C160,75,320,85,480,101.3C640,117,800,139,960,144C1120,149,1280,139,1360,133.3L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"
-      ></path>
-    </svg>
-  </div>
-
-<section id="vantaggi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1600px] mx-auto  text-[#1d3a6b]">
+  
+<section id="vantaggi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto  text-[#1d3a6b]">
   <div className="grid lg:grid-cols-2 gap-16 items-center">
     
     {/* Lista vantaggi */}
@@ -428,7 +456,7 @@ export default function HeroVeryPosta() {
 </section>
 
 
-<section id="media" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1600px] mx-auto text-[#1d3a6b]">
+<section id="media" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
   <div className="text-center mb-16">
     <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
       Dentro un <span className="text-[#ebd00b]">VeryPosta Point</span>
@@ -519,7 +547,7 @@ export default function HeroVeryPosta() {
   </div>
 
   {/* Contenuto centrale */}
-  <div className="relative z-10 grid md:grid-cols-2 gap-5 items-center w-full max-w-[1600px] mx-auto pb-20">
+  <div className="relative z-10 grid md:grid-cols-2 gap-5 items-center w-full max-w-[1400px] mx-auto pb-20">
 
     {/* Colonna sinistra illustrata */}
     <div className="flex flex-col items-start justify-center">
@@ -533,7 +561,7 @@ export default function HeroVeryPosta() {
         src="/svg.png"
         alt="Contattaci VeryPosta - Modulo di contatto per informazioni sul franchising"
         className="w-full VeryPostasvg"
-        width={600}
+        width={400}
         height={600}
         loading="lazy"
       />
@@ -622,7 +650,7 @@ export default function HeroVeryPosta() {
 
 <section
   id="diventa-point"
-  className="relative text-[#1d3a6b] overflow-hidden py-24 px-6 sm:px-10 lg:px-12 max-w-[1600px] mx-auto"
+  className="relative text-[#1d3a6b] overflow-hidden py-24 px-6 sm:px-10 lg:px-12 max-w-[1400px] mx-auto"
 >
 
 
@@ -662,42 +690,6 @@ export default function HeroVeryPosta() {
 
 
 
-<section id="sedi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1600px] mx-auto text-[#1d3a6b] ">
-  <div className="text-center mb-16">
-    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
-      Le nostre <span className="text-[#ebd00b]">Sedi</span>
-    </h2>
-    <p className="text-lg sm:text-xl text-gray-600 font-poppins max-w-2xl mx-auto">
-      VeryPosta cresce ogni giorno: scopri dove puoi trovarci e contattare i nostri Point ufficiali.
-    </p>
-  </div>
-
-  <div className="grid lg:grid-cols-2 gap-16 items-center">
-    {/* Mappa illustrata */}
-    <div className="w-full flex justify-center">
-      <img
-        src="/sedioperative.png"
-        alt="Mappa delle sedi VeryPosta in Italia - Trova il punto VeryPosta più vicino a te"
-        className="w-full max-w-2xl rounded-3xl "
-      />
-    </div>
-
-    {/* Dettagli sedi */}
-    <div className="space-y-10 font-poppins">
-      <div className="bg-[#f6f7fb] rounded-2xl p-6 shadow-md hover:shadow-lg transition">
-        <h3 className="text-2xl font-bold mb-2"> VeryPosta Aragona</h3>
-        <p className="text-gray-700 text-base sm:text-lg">Via Roma 204, Aragona (AG)</p>
-        <p className="text-gray-500 text-sm">Aperto dal lunedì al sabato</p>
-      </div>
-
-      <div className="bg-[#f6f7fb] rounded-2xl p-6 shadow-md hover:shadow-lg transition">
-        <h3 className="text-2xl font-bold mb-2"> VeryPosta Porto Empedocle</h3>
-        <p className="text-gray-700 text-base sm:text-lg">Via Milano, Porto Empedocle (AG)</p>
-        <p className="text-gray-500 text-sm">Aperto dal lunedì al sabato</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 {/* <section className="bg-[#ebd00b] text-[#1d3a6b] py-24 text-center px-6 sm:px-10">
   <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
@@ -715,25 +707,82 @@ export default function HeroVeryPosta() {
     </button>
   </div>
 </section> */}
+<section
+  id="dashboard-section"
+  className="w-full py-24 px-0 sm:px-10 lg:px-12 max-w-[1400px] mx-auto text-[#1d3a6b]"
+>
+  <div className="text-center mb-16 px-6 sm:px-0">
+    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
+      Il Cuore <span className="text-[#ebd00b]">Digitale</span> di ogni Point
+    </h2>
+    <p className="text-lg sm:text-xl text-gray-600 font-poppins max-w-2xl mx-auto">
+      La nostra dashboard può <br />
+      aiutarti a gestire tutto, senza pensieri. Accessibile, veloce
+    </p>
+  </div>
 
-
-      {/* Modals */}
-      <AffiliateModal 
-        isOpen={showAffiliateModal} 
-        onClose={() => setShowAffiliateModal(false)} 
+  {/* Wrapper con comportamento responsive */}
+  <div className="relative overflow-x-visible -mx-6 sm:mx-0">
+    <div
+      className="w-[200vw] sm:w-full max-w-[1200px] mx-auto 
+      sm:rounded-3xl sm:overflow-hidden 
+      sm:shadow-2xl"
+    >
+      <img
+        src="/Mockup.png" // <-- sostituisci col tuo mockup
+        alt="Dashboard Affiliati VeryPosta"
+        className="w-full h-auto object-cover"
       />
-      
+    </div>
+  </div>
+
+  <div className="text-center mt-12 px-6 sm:px-0">
+    <p className="text-md text-gray-500 font-medium">
+      Tutto a portata di click. In tempo reale. Sempre con stile.
+    </p>
+  </div>
+</section>
+
+
+      {/* Sezione Vantaggi */}
+      <VantaggiSection />
+
+      {/* Sezione FAQ */}
+      <FAQSection />
+
+      {/* Sezione Testimonials */}
+      <TestimonialsSection />
+
+      {/* Sezione Contatti */}
+      <ContactSection />
+
+      {/* Modali */}
+      {showAffiliateModal && (
+        <AffiliateModal
+          isOpen={showAffiliateModal}
+          onClose={() => setShowAffiliateModal(false)}
+        />
+      )}
+
       {showLocationMap && (
         <LocationMap
           isOpen={showLocationMap}
           onClose={() => setShowLocationMap(false)}
         />
       )}
-      
+
       {showROICalculator && (
         <ROICalculator
           isOpen={showROICalculator}
-          onClose={() => setShowROICalculator(false)}
+          onClose={() => setshowROICalculator(false)}
+        />
+      )}
+
+      {showServiceModal && (
+        <ServiceModal 
+          isOpen={showServiceModal} 
+          onClose={() => setShowServiceModal(false)} 
+          service={currentService} 
         />
       )}
       
