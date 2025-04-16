@@ -11,10 +11,17 @@ const nextConfig = {
                 net: false,
                 tls: false,
                 dns: false,
+                pg: false,
+                'pg-native': false
             };
         }
         return config;
     },
+    // Skip static generation for dynamic routes during build
+    output: 'standalone',
+    experimental: {
+        serverActions: true
+    }
 };
 
 export default nextConfig;

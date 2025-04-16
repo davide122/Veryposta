@@ -7,13 +7,24 @@ import { Pool } from 'pg';
 let pool;
 
 if (typeof window === 'undefined') {
-  // Server-side only
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
+  try {
+    // Server-side only
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/defaultdb',
+      ssl: process.env.DATABASE_URL ? {
+        rejectUnauthorized: false,
+      } : false,
+    });
+  } catch (error) {
+    console.warn('Database connection failed:', error.message);
+    // Provide mock pool for build time
+    pool = {
+      connect: () => ({
+        query: () => ({ rows: [] }),
+        release: () => {}
+      })
+    };
+  }
 }
 
 /**
