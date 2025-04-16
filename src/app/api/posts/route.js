@@ -1,3 +1,4 @@
+"use client"
 import { getAll, getById, insert, update, remove } from '@/app/utils/dbConfig';
 
 /**
