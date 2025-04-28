@@ -17,6 +17,7 @@ export default function NavbarSection({ scrollToSection, setShowAffiliateModal }
           <a onClick={() => scrollToSection("servizi")} className="hover:text-[#ebd00b] cursor-pointer transition">Servizi</a>
           <a onClick={() => scrollToSection("vantaggi")} className="hover:text-[#ebd00b] cursor-pointer transition">Vantaggi</a>
           <a onClick={() => scrollToSection("media")} className="hover:text-[#ebd00b] cursor-pointer transition">Gallery</a>
+          <Link href="/corsi" className="hover:text-[#ebd00b] cursor-pointer transition">Corsi</Link>
           <a onClick={() => scrollToSection("contatti")} className="hover:text-[#ebd00b] cursor-pointer transition">Contatti</a>
         </div>
 

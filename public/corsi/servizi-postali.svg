@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <g transform="translate(100, 50)">
+    <!-- Envelope -->
+    <path d="M 0,30 L 200,30 L 200,170 L 0,170 Z" fill="#1d3a6b"/>
+    <path d="M 10,40 L 190,40 L 190,160 L 10,160 Z" fill="white"/>
+    
+    <!-- Envelope Flap -->
+    <path d="M 0,30 L 100,0 L 200,30" fill="#1d3a6b" stroke="#1d3a6b" stroke-width="2"/>
+    
+    <!-- Stamp -->
+    <rect x="140" y="50" width="40" height="50" fill="#ebd00b" stroke="#1d3a6b" stroke-width="1" stroke-dasharray="2"/>
+    
+    <!-- Address Lines -->
+    <line x1="30" y1="70" x2="120" y2="70" stroke="#1d3a6b" stroke-width="2"/>
+    <line x1="30" y1="90" x2="120" y2="90" stroke="#1d3a6b" stroke-width="2"/>
+    <line x1="30" y1="110" x2="120" y2="110" stroke="#1d3a6b" stroke-width="2"/>
+    <line x1="30" y1="130" x2="80" y2="130" stroke="#1d3a6b" stroke-width="2"/>
+    
+    <!-- VeryPosta Logo -->
+    <g transform="translate(160, 75) scale(0.5)">
+      <text font-family="Arial" font-weight="bold" font-size="16">
+        <tspan x="0" y="0" fill="#1d3a6b">Very</tspan>
+        <tspan x="30" y="0" fill="#ebd00b">Posta</tspan>
+      </text>
+    </g>
+    
+    <!-- Mail Icons -->
+    <g transform="translate(-50, 100)">
+      <!-- Mail Icon 1 -->
+      <rect x="0" y="0" width="30" height="20" rx="2" fill="#ebd00b" opacity="0.8"/>
+      <path d="M 0,0 L 15,10 L 30,0" fill="none" stroke="#1d3a6b" stroke-width="1"/>
+      
+      <!-- Mail Icon 2 -->
+      <rect x="0" y="30" width="30" height="20" rx="2" fill="#ebd00b" opacity="0.6"/>
+      <path d="M 0,30 L 15,40 L 30,30" fill="none" stroke="#1d3a6b" stroke-width="1"/>
+      
+      <!-- Mail Icon 3 -->
+      <rect x="0" y="-30" width="30" height="20" rx="2" fill="#ebd00b" opacity="1"/>
+      <path d="M 0,-30 L 15,-20 L 30,-30" fill="none" stroke="#1d3a6b" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

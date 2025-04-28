@@ -102,15 +102,7 @@ export default function ServicePanel() {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       {/* Intestazione del pannello */}
-      <div className="bg-[#1d3a6b] text-white p-6">
-        <h2 className="text-2xl font-bold flex items-center">
-          <span className="mr-3">🔗</span>
-          Pannello Servizi VeryPosta
-        </h2>
-        <p className="text-gray-300 mt-2">
-          Accedi rapidamente a tutti i portali e servizi necessari per il tuo lavoro quotidiano
-        </p>
-      </div>
+    
 
       {/* Navigazione categorie */}
       <div className="bg-gray-50 p-4 overflow-x-auto">

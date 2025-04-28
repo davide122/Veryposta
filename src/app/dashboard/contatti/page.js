@@ -153,15 +153,15 @@ export default function ContactManagement() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Gestione Messaggi di Contatto</h1>
-      
+      <h1 className="text-3xl font-bold mb-6 text-[#1d3a6b]">Gestione Messaggi di Contatto</h1>
+  
       {/* Filtri */}
       <div className="mb-6">
-        <label className="mr-2">Filtra per stato:</label>
+        <label className="mr-2 font-medium text-gray-800">Filtra per stato:</label>
         <select 
           value={statusFilter} 
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border rounded p-2"
+          className="border border-gray-300 rounded p-2 focus:ring-2 focus:ring-[#1d3a6b] focus:outline-none"
         >
           <option value="all">Tutti</option>
           <option value="new">Nuovi</option>
@@ -170,60 +170,58 @@ export default function ContactManagement() {
           <option value="archived">Archiviati</option>
         </select>
       </div>
-      
+  
       <div className="flex flex-col md:flex-row gap-6">
         {/* Lista messaggi */}
         <div className="md:w-1/2 lg:w-2/5">
-          <h2 className="text-xl font-semibold mb-4">Messaggi ({filteredMessages.length})</h2>
-          
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Messaggi ({filteredMessages.length})</h2>
+  
           {filteredMessages.length === 0 ? (
-            <p className="text-gray-500">Nessun messaggio trovato</p>
+            <p className="text-gray-700 italic">Nessun messaggio trovato</p>
           ) : (
             <div className="border rounded-lg overflow-hidden">
               {filteredMessages.map((message) => (
                 <div 
                   key={message.id} 
-                  className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${selectedMessage?.id === message.id ? 'bg-blue-50' : ''} ${
-                    message.status === 'new' ? 'font-semibold' : ''
-                  }`}
+                  className={`p-4 border-b cursor-pointer hover:bg-gray-100 ${
+                    selectedMessage?.id === message.id ? 'bg-blue-100' : ''
+                  } ${message.status === 'new' ? 'font-semibold' : ''}`}
                   onClick={() => handleSelectMessage(message)}
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{message.name}</p>
+                      <p className="font-medium text-gray-800">{message.name}</p>
                       <p className="text-sm text-gray-600">{message.email}</p>
                       <p className="text-sm text-gray-500 mt-1">{formatDate(message.created_at)}</p>
                     </div>
-                    <div className="flex items-center">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        message.status === 'new' ? 'bg-red-100 text-red-800' :
-                        message.status === 'read' ? 'bg-blue-100 text-blue-800' :
-                        message.status === 'replied' ? 'bg-green-100 text-green-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {message.status === 'new' ? 'Nuovo' :
-                         message.status === 'read' ? 'Letto' :
-                         message.status === 'replied' ? 'Risposto' :
-                         'Archiviato'}
-                      </span>
-                    </div>
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      message.status === 'new' ? 'bg-red-200 text-red-900' :
+                      message.status === 'read' ? 'bg-blue-200 text-blue-900' :
+                      message.status === 'replied' ? 'bg-green-200 text-green-900' :
+                      'bg-gray-200 text-gray-900'
+                    }`}>
+                      {message.status === 'new' ? 'Nuovo' :
+                      message.status === 'read' ? 'Letto' :
+                      message.status === 'replied' ? 'Risposto' :
+                      'Archiviato'}
+                    </span>
                   </div>
-                  <p className="text-sm mt-2 line-clamp-2">{message.message}</p>
+                  <p className="text-sm mt-2 line-clamp-2 text-gray-700">{message.message}</p>
                 </div>
               ))}
             </div>
           )}
         </div>
-        
+  
         {/* Dettaglio messaggio */}
         <div className="md:w-1/2 lg:w-3/5">
-          <h2 className="text-xl font-semibold mb-4">Dettaglio Messaggio</h2>
-          
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Dettaglio Messaggio</h2>
+  
           {selectedMessage ? (
-            <div className="border rounded-lg p-6">
+            <div className="border rounded-lg p-6 bg-white shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-medium">{selectedMessage.name}</h3>
+                  <h3 className="text-lg font-medium text-gray-900">{selectedMessage.name}</h3>
                   <p className="text-gray-600">{selectedMessage.email} | {selectedMessage.phone}</p>
                   <p className="text-sm text-gray-500">Ricevuto il {formatDate(selectedMessage.created_at)}</p>
                 </div>
@@ -231,7 +229,7 @@ export default function ContactManagement() {
                   <select
                     value={selectedMessage.status}
                     onChange={(e) => updateMessageStatus(selectedMessage.id, e.target.value)}
-                    className="border rounded p-1 text-sm"
+                    className="border border-gray-300 rounded p-1 text-sm focus:ring-2 focus:ring-[#1d3a6b] focus:outline-none"
                   >
                     <option value="new">Nuovo</option>
                     <option value="read">Letto</option>
@@ -246,39 +244,39 @@ export default function ContactManagement() {
                   </button>
                 </div>
               </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h4 className="font-medium mb-2">Messaggio:</h4>
-                <p className="whitespace-pre-line">{selectedMessage.message}</p>
+  
+              <div className="bg-gray-100 p-4 rounded-lg mb-6">
+                <h4 className="font-medium mb-2 text-gray-800">Messaggio:</h4>
+                <p className="whitespace-pre-line text-gray-700">{selectedMessage.message}</p>
               </div>
-              
+  
               {selectedMessage.reply_message && (
-                <div className="bg-blue-50 p-4 rounded-lg mb-6">
-                  <h4 className="font-medium mb-2">Risposta inviata:</h4>
-                  <p className="whitespace-pre-line">{selectedMessage.reply_message}</p>
+                <div className="bg-blue-100 p-4 rounded-lg mb-6">
+                  <h4 className="font-medium mb-2 text-gray-800">Risposta inviata:</h4>
+                  <p className="whitespace-pre-line text-gray-700">{selectedMessage.reply_message}</p>
                   <p className="text-sm text-gray-500 mt-2">Inviata il {formatDate(selectedMessage.reply_date)}</p>
                 </div>
               )}
-              
+  
               <div className="mt-6">
-                <h4 className="font-medium mb-2">Invia risposta:</h4>
+                <h4 className="font-medium mb-2 text-gray-800">Invia risposta:</h4>
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="w-full border rounded-lg p-3 min-h-[120px]"
+                  className="w-full border border-gray-300 rounded-lg p-3 min-h-[120px] focus:ring-2 focus:ring-[#1d3a6b] focus:outline-none"
                   placeholder="Scrivi qui la tua risposta..."
                 ></textarea>
                 <button
                   onClick={handleSendReply}
                   disabled={!replyText.trim()}
-                  className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
+                  className="mt-3 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   Invia Risposta
                 </button>
               </div>
             </div>
           ) : (
-            <div className="border rounded-lg p-6 text-center text-gray-500">
+            <div className="border rounded-lg p-6 text-center text-gray-500 bg-gray-50">
               Seleziona un messaggio per visualizzare i dettagli
             </div>
           )}
@@ -286,4 +284,5 @@ export default function ContactManagement() {
       </div>
     </div>
   );
+  
 }

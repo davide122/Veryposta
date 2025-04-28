@@ -1,92 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Stili per la sezione corsi di VeryPosta */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: "Open Sans", sans-serif;
-
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-
-.VeryPostasvg{
-  display: none;
-
-
-}
-
-.mb{
-  position: relative;
-}
-/* tailwind.config.js o file globale CSS */
-.righe{
-  z-index: -2;
-}
-
-
-@media (min-width: 768px) {
-  .VeryPostasvg {
-    top: -90px;
-    left: 80px;
-    display: block;
-    position: relative;
-  }
-}
-
-@media (min-width: 1024px) {
-  .VeryPostasvg {
-    top: -90px;
-    left: 440px !important;
-    display: block;
-    position: relative;
-  }
-}
-
-.rotate{
-  rotate: 180deg;
-}
-
-html,
-body {
-  overflow-x: hidden;
-}
-
-.banner{
-  height: 60vh !important;
-object-fit: full !important;
-padding: 10px;
-overflow: hidden;
-
-}
-.banner img {
-  object-fit: cover !important;
-  height: 100%;
-  width: 100%;
-  border-radius: 30px;
-  overflow: hidden;
+  --veryposta-blue: #1d3a6b;
+  --veryposta-yellow: #ebd00b;
+  --veryposta-light-blue: #2a4e8d;
+  --veryposta-light-yellow: #f5e575;
+  --veryposta-gray: #f5f5f7;
 }
 
 /* Stili per lo slider in stile Netflix */
@@ -607,3 +526,182 @@ overflow: hidden;
   font-size: 0.75rem;
   color: #000000;
 }
+
+.moduloStatus {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: #eee;
+  color: #000000;
+}
+
+.moduloStatusCompleted {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.moduloContent {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.moduloContentTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--veryposta-blue);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.moduloContentText {
+  line-height: 1.6;
+  color: #000000;
+}
+
+.moduloContentText p {
+  margin-bottom: 1.5rem;
+}
+
+.moduloContentText ul {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.moduloContentText li {
+  margin-bottom: 0.5rem;
+}
+
+.quizButton {
+  background-color: var(--veryposta-blue);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.quizButton:hover {
+  background-color: var(--veryposta-light-blue);
+}
+
+.quizContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.quizTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--veryposta-blue);
+  margin-bottom: 1.5rem;
+}
+
+.quizQuestion {
+  margin-bottom: 2rem;
+}
+
+.quizQuestionText {
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 1rem;
+}
+
+.quizOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quizOption {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quizOption:hover {
+  background-color: #f9f9f9;
+}
+
+.quizOptionSelected {
+  border-color: var(--veryposta-blue);
+  background-color: rgba(29, 58, 107, 0.05);
+}
+
+.quizSubmitButton {
+  background-color: var(--veryposta-yellow);
+  color: var(--veryposta-blue);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 2rem;
+}
+
+.quizSubmitButton:hover {
+  background-color: var(--veryposta-light-yellow);
+}
+
+.quizResult {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.quizResultTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--veryposta-blue);
+  margin-bottom: 1rem;
+}
+
+.quizResultScore {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--veryposta-yellow);
+  margin-bottom: 1rem;
+}
+
+.quizResultMessage {
+  font-size: 1.125rem;
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+.quizResultButton {
+  background-color: var(--veryposta-blue);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.quizResultButton:hover {
+  background-color: var(--veryposta-light-blue);
+}
+

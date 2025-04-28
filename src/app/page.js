@@ -19,6 +19,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import ServiceModal from "./components/ServiceModal";
+import Footer from "./components/footer";
+import PreventivoSpedizione from "./components/CalcoloPreventivo";
 
 // Componente per i meta tag delle sezioni
 const SectionMeta = ({ id, title, description }) => {
@@ -743,7 +745,7 @@ export default function HeroVeryPosta() {
   </div>
 </section>
 
-
+<PreventivoSpedizione></PreventivoSpedizione>
       {/* Sezione Vantaggi */}
       <VantaggiSection />
 
@@ -788,6 +790,9 @@ export default function HeroVeryPosta() {
       
       {/* ChatBot */}
       <ChatBot />
+
+       <Footer></Footer>
     </main>
+   
   );
 }

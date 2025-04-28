@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <g transform="translate(100, 50)">
+    <!-- Growth Chart -->
+    <rect x="0" y="0" width="180" height="160" rx="5" fill="white" stroke="#1d3a6b" stroke-width="2"/>
+    
+    <!-- Chart Grid -->
+    <line x1="20" y1="20" x2="20" y2="140" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="60" y1="20" x2="60" y2="140" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="100" y1="20" x2="100" y2="140" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="140" y1="20" x2="140" y2="140" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    
+    <line x1="20" y1="140" x2="160" y2="140" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="20" y1="110" x2="160" y2="110" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="20" y1="80" x2="160" y2="80" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="20" y1="50" x2="160" y2="50" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="20" y1="20" x2="160" y2="20" stroke="#1d3a6b" stroke-width="1" stroke-opacity="0.5"/>
+    
+    <!-- Chart Axes -->
+    <line x1="20" y1="140" x2="160" y2="140" stroke="#1d3a6b" stroke-width="2"/>
+    <line x1="20" y1="20" x2="20" y2="140" stroke="#1d3a6b" stroke-width="2"/>
+    
+    <!-- Bar Chart -->
+    <rect x="30" y="100" width="20" height="40" fill="#1d3a6b" opacity="0.7"/>
+    <rect x="70" y="80" width="20" height="60" fill="#1d3a6b" opacity="0.8"/>
+    <rect x="110" y="60" width="20" height="80" fill="#1d3a6b" opacity="0.9"/>
+    <rect x="150" y="40" width="20" height="100" fill="#1d3a6b"/>
+    
+    <!-- Growth Line -->
+    <path d="M 40,100 L 80,80 L 120,60 L 160,40" stroke="#ebd00b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="100" r="4" fill="#ebd00b"/>
+    <circle cx="80" cy="80" r="4" fill="#ebd00b"/>
+    <circle cx="120" cy="60" r="4" fill="#ebd00b"/>
+    <circle cx="160" cy="40" r="4" fill="#ebd00b"/>
+    
+    <!-- Marketing Icons -->
+    <g transform="translate(-60, 20)">
+      <!-- Megaphone -->
+      <path d="M 0,30 L 10,20 L 10,60 L 0,50 Z" fill="#1d3a6b"/>
+      <path d="M 10,20 L 40,10 L 40,70 L 10,60 Z" fill="#ebd00b" opacity="0.8"/>
+      <path d="M 40,30 Q 50,40 40,50" stroke="#1d3a6b" stroke-width="2" fill="none"/>
+      <path d="M 40,25 Q 55,40 40,55" stroke="#1d3a6b" stroke-width="2" fill="none"/>
+      <path d="M 40,20 Q 60,40 40,60" stroke="#1d3a6b" stroke-width="2" fill="none"/>
+    </g>
+    
+    <!-- Target Icon -->
+    <g transform="translate(-50, 100)">
+      <circle cx="0" cy="0" r="30" fill="#ebd00b" opacity="0.2"/>
+      <circle cx="0" cy="0" r="20" fill="#ebd00b" opacity="0.4"/>
+      <circle cx="0" cy="0" r="10" fill="#ebd00b" opacity="0.8"/>
+      <circle cx="0" cy="0" r="3" fill="#1d3a6b"/>
+      <line x1="-35" y1="0" x2="35" y2="0" stroke="#1d3a6b" stroke-width="1"/>
+      <line x1="0" y1="-35" x2="0" y2="35" stroke="#1d3a6b" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

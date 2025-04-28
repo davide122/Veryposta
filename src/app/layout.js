@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { SearchTermsProvider } from "./components/SearchTermsProvider";
-
+import { Analytics } from "@vercel/analytics/react"
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -44,7 +44,7 @@ export const metadata = {
     locale: "it_IT",
     images: [
       {
-        url: "/dsx.png",
+        url: "/ogscopri.png",
         width: 1200,
         height: 630,
         alt: "VeryPosta - Franchising Multiservizi",
@@ -56,7 +56,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "VeryPosta - Il Futuro dei Multiservizi è Ora",
     description: "Franchising multiservizi con supporto reale, formazione continua e tecnologia inclusa.",
-    images: ["/dsx.png"],
+    images: ["/ogscopri.png"],
   },
   alternates: {
     canonical: "https://veryposta.it",

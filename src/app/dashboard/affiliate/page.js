@@ -222,7 +222,7 @@ export default function AffiliateDashboard() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm h-screen sticky top-16 overflow-y-auto hidden md:block">
+        <div className="w-64 bg-white shadow-sm vh-100 sticky top-16 overflow-y-auto hidden md:block">
           <div className="p-4">
             <nav className="space-y-1">
               <button 
@@ -416,96 +416,7 @@ export default function AffiliateDashboard() {
               <h2 className="text-xl font-bold mb-6">Gestione Servizi</h2>
               
               {/* Form per registrare un nuovo servizio */}
-              <div className="mb-8 border-b pb-8">
-                <h3 className="text-lg font-medium mb-4">Registra Nuovo Servizio</h3>
-                <form onSubmit={handleServiceSubmit}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tipo di Servizio *</label>
-                      <select 
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        value={newService.service_type}
-                        onChange={(e) => setNewService({...newService, service_type: e.target.value})}
-                        required
-                      >
-                        <option value="">Seleziona un servizio</option>
-                        <option value="Spedizione">Spedizione</option>
-                        <option value="Energia">Energia</option>
-                        <option value="SPID">SPID</option>
-                        <option value="PEC">PEC</option>
-                        <option value="Firma Digitale">Firma Digitale</option>
-                        <option value="Consulenza">Consulenza</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Importo (€) *</label>
-                      <input 
-                        type="number" 
-                        step="0.01"
-                        min="0"
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        value={newService.amount}
-                        onChange={(e) => setNewService({...newService, amount: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nome Cliente *</label>
-                      <input 
-                        type="text" 
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        value={newService.client_name}
-                        onChange={(e) => setNewService({...newService, client_name: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Cliente</label>
-                      <input 
-                        type="email" 
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        value={newService.client_email}
-                        onChange={(e) => setNewService({...newService, client_email: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Telefono Cliente</label>
-                      <input 
-                        type="tel" 
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        value={newService.client_phone}
-                        onChange={(e) => setNewService({...newService, client_phone: e.target.value})}
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
-                      <textarea 
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#1d3a6b] focus:ring focus:ring-[#1d3a6b] focus:ring-opacity-50"
-                        rows="3"
-                        value={newService.notes}
-                        onChange={(e) => setNewService({...newService, notes: e.target.value})}
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <button 
-                      type="submit" 
-                      className="bg-[#1d3a6b] text-white px-4 py-2 rounded-md hover:bg-[#152c52] focus:outline-none focus:ring-2 focus:ring-[#1d3a6b] focus:ring-opacity-50 flex items-center"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Registrazione...
-                        </>
-                      ) : 'Registra Servizio'}
-                    </button>
-                  </div>
-                </form>
-              </div>
+          
               
               <p className="text-gray-600 mb-8">Questa sezione ti permette di gestire tutti i servizi offerti dal tuo punto VeryPosta.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -698,12 +609,7 @@ export default function AffiliateDashboard() {
           {/* Portals Tab */}
           {activeTab === 'portals' && (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold mb-4">Portali e Servizi</h2>
-                <p className="text-gray-600 mb-6">
-                  Accedi rapidamente a tutti i portali e servizi necessari per il tuo lavoro quotidiano. Puoi aggiungere note personali e salvare i tuoi preferiti.
-                </p>
-              </div>
+              
               <ServicePanel />
             </div>
           )}
