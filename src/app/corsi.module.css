@@ -1,12 +1,5 @@
 /* Stili per la sezione corsi di VeryPosta */
 
-:root {
-  --veryposta-blue: #1d3a6b;
-  --veryposta-yellow: #ebd00b;
-  --veryposta-light-blue: #2a4e8d;
-  --veryposta-light-yellow: #f5e575;
-  --veryposta-gray: #f5f5f7;
-}
 
 /* Stili per lo slider in stile Netflix */
 .scrollbar-hide {
