@@ -21,6 +21,7 @@ import { Pagination } from 'swiper/modules';
 import ServiceModal from "./components/ServiceModal";
 import Footer from "./components/footer";
 import PreventivoSpedizione from "./components/CalcoloPreventivo";
+import { track } from '@vercel/analytics';
 
 // Componente per i meta tag delle sezioni
 const SectionMeta = ({ id, title, description }) => {
@@ -175,6 +176,12 @@ export default function HeroVeryPosta() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    track('Contact Form Submit', {
+      hasName: !!formData.name,
+      hasEmail: !!formData.email,
+      hasPhone: !!formData.phone,
+      hasMessage: !!formData.message
+    });
     const tipo = e.target.tipo.value;
     const formData = new FormData(e.target);
     
@@ -293,9 +300,41 @@ export default function HeroVeryPosta() {
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
+      track('Navigation Click', {
+        section: id,
+        timestamp: new Date().toISOString()
+      });
       element.scrollIntoView({ behavior: 'smooth' });
       setIsOpen(false);
     }
+  };
+
+  // Tracciamento click servizi
+  const handleServiceClick = (service) => {
+    track('Service Click', {
+      serviceName: service.name,
+      serviceIcon: service.icon
+    });
+    setCurrentService(service);
+    setShowServiceModal(true);
+  };
+
+  // Tracciamento click affiliazione
+  const handleAffiliateClick = () => {
+    track('Affiliate Button Click', {
+      location: 'main_page',
+      timestamp: new Date().toISOString()
+    });
+    setShowAffiliateModal(true);
+  };
+
+  // Tracciamento visualizzazione offerte
+  const handleOfferView = (offer) => {
+    track('Offer View', {
+      offerTitle: offer.title,
+      offerPrice: offer.prezzo,
+      offerType: offer.icon === '⚡' ? 'electricity' : 'gas'
+    });
   };
 
   return (
@@ -326,7 +365,7 @@ export default function HeroVeryPosta() {
             Area Riservata
           </Link>
           <button
-            onClick={() => setShowAffiliateModal(true)}
+            onClick={handleAffiliateClick}
             className="bg-[#ebd00b] text-[#1d3a6b] px-7 py-3 text-lg rounded-full font-bold hover:bg-yellow-400 transition"
           >
             Diventa Affiliato
@@ -418,7 +457,7 @@ export default function HeroVeryPosta() {
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
               <HoverEffect scale={1.05}>
                 <button 
-                  onClick={() => setShowAffiliateModal(true)} 
+                  onClick={handleAffiliateClick} 
                   className="bg-[#ebd00b] text-[#1d3a6b] px-6 py-3 rounded-full text-base sm:text-lg font-bold hover:bg-yellow-400 transition shadow-md w-full"
                 >
                   Scopri il Franchising
@@ -526,10 +565,7 @@ export default function HeroVeryPosta() {
       <div 
         key={i} 
         className="bg-white p-6 rounded-3xl shadow-md hover:shadow-lg transition-all cursor-pointer"
-        onClick={() => {
-          setCurrentService(s);
-          setShowServiceModal(true);
-        }}
+        onClick={() => handleServiceClick(s)}
       >
         <div className="text-3xl sm:text-4xl mb-3">{s.icon}</div>
         <p className="font-poppins text-sm sm:text-base text-[#1d3a6b] font-medium">{s.name}</p>
@@ -796,7 +832,7 @@ export default function HeroVeryPosta() {
         Trasforma la tua attività in un centro multiservizi innovativo con il supporto di un brand solido, strumenti digitali, marketing, formazione e convenzioni nazionali.
       </p>
       <button 
-        onClick={() => setShowAffiliateModal(true)} 
+        onClick={handleAffiliateClick} 
         className="w-fit bg-[#ebd00b] text-[#1d3a6b] px-8 py-4 rounded-full text-lg font-bold hover:bg-yellow-400 transition"
       >
         Richiedi Informazioni
@@ -999,7 +1035,11 @@ export default function HeroVeryPosta() {
         <h3 className="text-2xl font-bold text-center">Le nostre offerte per te</h3>
         <div className="grid md:grid-cols-2 gap-6">
           {currentOffers.map((offer, index) => (
-            <div key={index} className="bg-[#f6f7fb] rounded-3xl p-6 shadow-md hover:shadow-lg transition-all">
+            <div 
+              key={index} 
+              className="bg-[#f6f7fb] rounded-3xl p-6 shadow-md hover:shadow-lg transition-all"
+              onMouseEnter={() => handleOfferView(offer)}
+            >
               <div className="flex items-center gap-4 mb-4">
                 <span className="text-4xl">{offer.icon}</span>
                 <div>
@@ -1018,7 +1058,7 @@ export default function HeroVeryPosta() {
               </ul>
               <button 
                 className="mt-4 w-full bg-[#1d3a6b] text-white px-6 py-3 rounded-full font-bold hover:bg-[#16305b] transition"
-                onClick={() => setShowAffiliateModal(true)}
+                onClick={handleAffiliateClick}
               >
                 Richiedi Informazioni
               </button>
@@ -1275,7 +1315,7 @@ export default function HeroVeryPosta() {
         {/* CTA */}
         <div className="text-center mt-16">
           <button 
-            onClick={() => setShowAffiliateModal(true)}
+            onClick={handleAffiliateClick}
             className="bg-[#ebd00b] text-[#1d3a6b] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-400 transition"
           >
             Diventa anche tu un Affiliato
