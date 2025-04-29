@@ -45,7 +45,18 @@ export default function Footer() {
           <p className="text-gray-300">
             Franchising multiservizi innovativo con supporto reale, formazione continua e tecnologia inclusa.
           </p>
-          
+          <div className="text-xs text-gray-400 mt-4 leading-relaxed">
+            <strong>VERY POSTA MULTISERVICE</strong><br />
+            di Veronica Stagno<br />
+            Via Milano, 42 - 92014 Porto Empedocle (AG)<br />
+            C.F. STG VNC 89T70 A089N<br />
+            P. IVA 03011530841
+          </div>
+          <div className="text-xs text-gray-400 mt-2 flex flex-wrap gap-4">
+            <Link href="/privacy" className="underline hover:text-white">Privacy Policy</Link>
+            <Link href="/cookie" className="underline hover:text-white">Cookie Policy</Link>
+            <Link href="/termini" className="underline hover:text-white">Termini e Condizioni</Link>
+          </div>
         </div>
 
         {/* Navigation Columns */}

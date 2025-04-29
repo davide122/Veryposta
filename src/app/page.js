@@ -37,15 +37,12 @@ export default function HeroVeryPosta() {
   const [isOpen, setIsOpen] = useState(false);
   const [showAffiliateModal, setShowAffiliateModal] = useState(false);
   const [showLocationMap, setShowLocationMap] = useState(false);
-  const [showROICalculator, setshowROICalculator]=useState(false);
+  const [showROICalculator, setshowROICalculator] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [currentService, setCurrentService] = useState(null);
-  // Animazione per lo scroll indicator
-  const [scrollIndicator, scrollIndicatorApi] = useSpring(() => ({
-    opacity: 1,
-    y: 0,
-    config: { tension: 150, friction: 12 }
-  }));
+  const [showOffers, setShowOffers] = useState(false);
+  const [currentOffers, setCurrentOffers] = useState([]);
+  const [selectedService, setSelectedService] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -58,6 +55,12 @@ export default function HeroVeryPosta() {
     isError: false,
     message: ''
   });
+  // Animazione per lo scroll indicator
+  const [scrollIndicator, scrollIndicatorApi] = useSpring(() => ({
+    opacity: 1,
+    y: 0,
+    config: { tension: 150, friction: 12 }
+  }));
   
   // Schema markup per i rich snippets
   const jsonLd = {
@@ -66,7 +69,7 @@ export default function HeroVeryPosta() {
     "name": "VeryPosta",
     "url": "https://veryposta.it",
     "logo": "https://veryposta.it/dsx.png",
-    "description": "VeryPosta offre un franchising multiservizi innovativo con supporto reale, formazione continua e tecnologia inclusa.",
+    "description": "VeryPosta offre un franchising multiservizi innovativo con supporto reale, formazione continua e tecnologia inclusa. Servizi postali, energia, telefonia e molto altro in un unico punto.",
     "address": {
       "@type": "PostalAddress",
       "addressCountry": "IT"
@@ -86,8 +89,45 @@ export default function HeroVeryPosta() {
     "offers": {
       "@type": "Offer",
       "name": "Franchising VeryPosta",
-      "description": "Diventa affiliato VeryPosta con un investimento iniziale contenuto"
+      "description": "Diventa affiliato VeryPosta con un investimento iniziale contenuto di €400+IVA. Formazione completa, supporto dedicato e tecnologia inclusa."
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "30"
     }
+  };
+
+  // Schema markup per le recensioni
+  const reviewsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Josef Cap"
+        },
+        "reviewBody": "Consiglio vivamente, spedizione accurata e pedana ben imballata. I pacchi sono arrivati a destinazione in perfetto stato e in tempi molto rapidi."
+      },
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Mariaconcetta Tabone"
+        },
+        "reviewBody": "Spedisco spesso pacchi da Torino ed è da un anno che usufruisco del precisissimo servizio di Very Posta Multiservice. Professionalità e affidabilità garantite."
+      }
+    ]
   };
 
   useEffect(() => {
@@ -107,6 +147,24 @@ export default function HeroVeryPosta() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [scrollIndicatorApi]);
 
+  // Gestione visibilità form
+  useEffect(() => {
+    const tipoSelect = document.getElementById('tipo');
+    const formLuce = document.getElementById('formLuce');
+    const formGas = document.getElementById('formGas');
+
+    if (tipoSelect && formLuce && formGas) {
+      const handleTipoChange = () => {
+        const selectedValue = tipoSelect.value;
+        formLuce.classList.toggle('hidden', selectedValue !== 'luce');
+        formGas.classList.toggle('hidden', selectedValue !== 'gas');
+      };
+
+      tipoSelect.addEventListener('change', handleTipoChange);
+      return () => tipoSelect.removeEventListener('change', handleTipoChange);
+    }
+  }, []);
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({
@@ -117,48 +175,118 @@ export default function HeroVeryPosta() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setFormStatus({
-      isSubmitting: true,
-      isSubmitted: false,
-      isError: false,
-      message: ''
-    });
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
+    const tipo = e.target.tipo.value;
+    const formData = new FormData(e.target);
+    
+    // Calcolo per luce
+    if (tipo === "luce") {
+      const consumoFattura = parseFloat(formData.get("consumoFattura"));
+      const periodoFattura = parseFloat(formData.get("periodoFattura"));
+      const potenzaImpegnata = parseFloat(formData.get("potenzaImpegnata"));
+      const tariffa = formData.get("tariffa");
+      const mercato = formData.get("mercato");
       
-      if (response.ok) {
-        setFormStatus({
-          isSubmitting: false,
-          isSubmitted: true,
-          isError: false,
-          message: result.message
-        });
-        setFormData({ name: '', email: '', phone: '', message: '' });
+      // Calcolo consumo giornaliero e mensile
+      const consumoGiornaliero = consumoFattura / periodoFattura;
+      const consumoMensile = consumoGiornaliero * 30;
+      const consumoAnnuale = consumoMensile * 12;
+      
+      // Calcolo costo attuale
+      let costoAttuale = 0;
+      if (mercato === "tutelato") {
+        costoAttuale = consumoAnnuale * 0.15; // Prezzo tutelato medio
       } else {
-        setFormStatus({
-          isSubmitting: false,
-          isSubmitted: true,
-          isError: true,
-          message: result.message || 'Si è verificato un errore. Riprova più tardi.'
-        });
+        costoAttuale = consumoAnnuale * 0.20; // Prezzo libero medio
       }
-    } catch (error) {
-      console.error('Errore durante l\'invio del form:', error);
-      setFormStatus({
-        isSubmitting: false,
-        isSubmitted: true,
-        isError: true,
-        message: 'Si è verificato un errore di connessione. Riprova più tardi.'
-      });
+      
+      // Aggiungi costi fissi
+      costoAttuale += potenzaImpegnata * 12 * 30; // Costo potenza mensile
+      
+      // Calcolo costo con VeryPosta
+      const costoVeryPosta = consumoAnnuale * 0.14 + (potenzaImpegnata * 12 * 30);
+      const risparmio = costoAttuale - costoVeryPosta;
+      const percentualeRisparmio = ((risparmio / costoAttuale) * 100).toFixed(1);
+      
+      setShowOffers(true);
+      setCurrentOffers([
+        {
+          title: "VeryPosta Luce Smart",
+          desc: `Con il tuo consumo attuale di ${consumoAnnuale.toFixed(0)} kWh/anno, potresti risparmiare ${risparmio.toFixed(2)}€ (${percentualeRisparmio}%)`,
+          prezzo: "0.14 €/kWh",
+          risparmio: "Prezzo fisso per 24 mesi",
+          icon: "⚡",
+          dettagli: [
+            "Prezzo energia bloccato per 24 mesi",
+            "Nessun costo di attivazione",
+            "Assistenza dedicata 24/7",
+            "App per monitorare i consumi"
+          ]
+        },
+        {
+          title: "VeryPosta Luce Green",
+          desc: "Energia 100% rinnovabile con prezzo variabile",
+          prezzo: "0.12 €/kWh",
+          risparmio: "Fino al 30% di risparmio",
+          icon: "🌱",
+          dettagli: [
+            "Energia da fonti rinnovabili",
+            "Prezzo variabile con tetto massimo",
+            "Cashback mensile sui consumi",
+            "Monitoraggio consumi in tempo reale"
+          ]
+        }
+      ]);
+    }
+    
+    // Calcolo per gas
+    if (tipo === "gas") {
+      const consumoFattura = parseFloat(formData.get("consumoFatturaGas"));
+      const periodoFattura = parseFloat(formData.get("periodoFatturaGas"));
+      const zonaClimatica = formData.get("zonaClimatica");
+      const utilizzo = formData.get("utilizzo");
+      
+      // Calcolo consumo giornaliero e mensile
+      const consumoGiornaliero = consumoFattura / periodoFattura;
+      const consumoMensile = consumoGiornaliero * 30;
+      const consumoAnnuale = consumoMensile * 12;
+      
+      // Calcolo costo attuale
+      let costoAttuale = consumoAnnuale * 0.60; // Prezzo medio Smc
+      
+      // Calcolo costo con VeryPosta
+      const costoVeryPosta = consumoAnnuale * 0.45;
+      const risparmio = costoAttuale - costoVeryPosta;
+      const percentualeRisparmio = ((risparmio / costoAttuale) * 100).toFixed(1);
+      
+      setShowOffers(true);
+      setCurrentOffers([
+        {
+          title: "VeryPosta Gas Comfort",
+          desc: `Con il tuo consumo attuale di ${consumoAnnuale.toFixed(0)} Smc/anno, potresti risparmiare ${risparmio.toFixed(2)}€ (${percentualeRisparmio}%)`,
+          prezzo: "0.45 €/Smc",
+          risparmio: "Prezzo fisso per 24 mesi",
+          icon: "🔥",
+          dettagli: [
+            "Prezzo gas bloccato per 24 mesi",
+            "Nessun costo di attivazione",
+            "Assistenza dedicata 24/7",
+            "App per monitorare i consumi"
+          ]
+        },
+        {
+          title: "VeryPosta Gas Premium",
+          desc: "Tariffa variabile con cashback mensile",
+          prezzo: "0.40 €/Smc",
+          risparmio: "Fino al 35% di risparmio",
+          icon: "💎",
+          dettagli: [
+            "Prezzo variabile con tetto massimo",
+            "Cashback mensile sui consumi",
+            "Monitoraggio consumi in tempo reale",
+            "Assistenza dedicata"
+          ]
+        }
+      ]);
     }
   };
 
@@ -323,7 +451,7 @@ export default function HeroVeryPosta() {
         {/* Scroll indicator */}
         <animated.div 
           style={scrollIndicator} 
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer"
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer hidden md:flex"
           onClick={() => scrollToSection('perche')}
         >
           <span className="text-sm text-gray-500 mb-2">Scopri di più</span>
@@ -360,7 +488,7 @@ export default function HeroVeryPosta() {
             {
               icon: "💻",
               title: "Tecnologia Inclusa",
-              desc: "Dashboard gestionali e strumenti digitali pronti all’uso."
+              desc: "Dashboard gestionali e strumenti digitali pronti all'uso."
             }
           ].map((item, index) => (
             <div key={index} className="bg-[#f6f7fb] rounded-3xl p-8 sm:p-10 shadow-md hover:shadow-lg transition-all text-center">
@@ -441,7 +569,7 @@ export default function HeroVeryPosta() {
 
     {/* Testimonianza */}
     <div className=" rounded-3xl p-8 sm:p-10 ">
-      <div className="text-6xl text-[#ebd00b] font-serif mb-4">“</div>
+      <div className="text-6xl text-[#ebd00b] font-serif mb-4">"</div>
       <p className="text-lg sm:text-xl text-gray-700 font-poppins italic mb-6">
         Con VeryPosta ho potuto ampliare i miei servizi, fidelizzare i clienti e aumentare il mio fatturato. Supporto reale e formazione continua: davvero un punto di svolta.
       </p>
@@ -691,6 +819,216 @@ export default function HeroVeryPosta() {
 
 
 
+<section id="offerte" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
+  <div className="text-center mb-16">
+    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
+      Scopri se puoi <span className="text-[#ebd00b]">Risparmiare</span> con VeryPosta
+    </h2>
+    <p className="text-lg sm:text-xl text-gray-600 font-poppins max-w-2xl mx-auto">
+      Inserisci i dati della tua attuale fornitura luce o gas e verifica subito se abbiamo offerte più vantaggiose per te!
+    </p>
+  </div>
+
+  {/* Formulario */}
+  <div className="bg-white shadow-2xl rounded-3xl p-8 sm:p-12 space-y-8 max-w-3xl mx-auto">
+    <form 
+      onSubmit={handleFormSubmit}
+      className="space-y-6"
+    >
+      {/* Tipo di servizio */}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="tipo" className="font-semibold">Tipo di servizio</label>
+        <select 
+          id="tipo" 
+          name="tipo" 
+          required
+          value={selectedService}
+          onChange={(e) => setSelectedService(e.target.value)}
+          className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+        >
+          <option value="">Seleziona un servizio</option>
+          <option value="luce">Luce</option>
+          <option value="gas">Gas</option>
+        </select>
+      </div>
+
+      {/* Form Luce */}
+      {selectedService === 'luce' && (
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="consumoFattura" className="font-semibold">Consumo ultima fattura (kWh)</label>
+            <input 
+              type="number" 
+              id="consumoFattura" 
+              name="consumoFattura" 
+              required
+              placeholder="Es. 250"
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="periodoFattura" className="font-semibold">Periodo fattura (giorni)</label>
+            <input 
+              type="number" 
+              id="periodoFattura" 
+              name="periodoFattura" 
+              required
+              placeholder="Es. 30"
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            />
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="potenzaImpegnata" className="font-semibold">Potenza impegnata (kW)</label>
+            <select 
+              id="potenzaImpegnata" 
+              name="potenzaImpegnata" 
+              required
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            >
+              <option value="3">3 kW</option>
+              <option value="4.5">4.5 kW</option>
+              <option value="6">6 kW</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="tariffa" className="font-semibold">Tipo di tariffa</label>
+            <select 
+              id="tariffa" 
+              name="tariffa" 
+              required
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            >
+              <option value="monoraria">Monoraria</option>
+              <option value="bioraria">Bioraria</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="mercato" className="font-semibold">Mercato attuale</label>
+            <select 
+              id="mercato" 
+              name="mercato" 
+              required
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            >
+              <option value="tutelato">Tutelato</option>
+              <option value="libero">Libero</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Form Gas */}
+      {selectedService === 'gas' && (
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="consumoFatturaGas" className="font-semibold">Consumo ultima fattura (Smc)</label>
+            <input 
+              type="number" 
+              id="consumoFatturaGas" 
+              name="consumoFatturaGas" 
+              required
+              placeholder="Es. 100"
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="periodoFatturaGas" className="font-semibold">Periodo fattura (giorni)</label>
+            <input 
+              type="number" 
+              id="periodoFatturaGas" 
+              name="periodoFatturaGas" 
+              required
+              placeholder="Es. 30"
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            />
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="zonaClimatica" className="font-semibold">Zona climatica</label>
+            <select 
+              id="zonaClimatica" 
+              name="zonaClimatica" 
+              required
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            >
+              <option value="A">A (Sud Italia)</option>
+              <option value="B">B (Centro Italia)</option>
+              <option value="C">C (Nord Italia)</option>
+              <option value="D">D (Alpi)</option>
+              <option value="E">E (Montagna)</option>
+              <option value="F">F (Alta Montagna)</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="utilizzo" className="font-semibold">Utilizzo principale</label>
+            <select 
+              id="utilizzo" 
+              name="utilizzo" 
+              required
+              className="border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+            >
+              <option value="riscaldamento">Riscaldamento</option>
+              <option value="acqua">Acqua calda</option>
+              <option value="cucina">Cucina</option>
+              <option value="misto">Utilizzo misto</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Bottone invio */}
+      <div className="text-center">
+        <button 
+          type="submit" 
+          className="bg-[#ebd00b] text-[#1d3a6b] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-400 transition"
+        >
+          Verifica Risparmio
+        </button>
+      </div>
+    </form>
+
+    {/* Sezione Offerte */}
+    {showOffers && (
+      <div className="mt-12 space-y-6">
+        <h3 className="text-2xl font-bold text-center">Le nostre offerte per te</h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          {currentOffers.map((offer, index) => (
+            <div key={index} className="bg-[#f6f7fb] rounded-3xl p-6 shadow-md hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-4xl">{offer.icon}</span>
+                <div>
+                  <h4 className="text-xl font-bold">{offer.title}</h4>
+                  <p className="text-[#ebd00b] font-semibold">{offer.prezzo}</p>
+                </div>
+              </div>
+              <p className="text-gray-600 mb-4">{offer.desc}</p>
+              <ul className="space-y-2 mb-4">
+                {offer.dettagli.map((dettaglio, i) => (
+                  <li key={i} className="flex items-center gap-2 text-gray-600">
+                    <span className="text-[#ebd00b]">✓</span>
+                    {dettaglio}
+                  </li>
+                ))}
+              </ul>
+              <button 
+                className="mt-4 w-full bg-[#1d3a6b] text-white px-6 py-3 rounded-full font-bold hover:bg-[#16305b] transition"
+                onClick={() => setShowAffiliateModal(true)}
+              >
+                Richiedi Informazioni
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
 
 
 {/* <section className="bg-[#ebd00b] text-[#1d3a6b] py-24 text-center px-6 sm:px-10">
@@ -753,7 +1091,197 @@ export default function HeroVeryPosta() {
       <FAQSection />
 
       {/* Sezione Testimonials */}
-      <TestimonialsSection />
+      <section id="testimonial" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
+            Cosa dicono i nostri <span className="text-[#ebd00b]">Clienti</span>
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-600 font-poppins max-w-2xl mx-auto">
+            Scopri le esperienze di chi ha scelto i nostri servizi
+          </p>
+        </div>
+
+        {/* Statistiche */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          {[
+            { number: "5/5", label: "Valutazione Media" },
+            { number: "30+", label: "Point Attivi" },
+            { number: "15+", label: "Servizi Integrati" },
+            { number: "24/7", label: "Supporto Dedicato" }
+          ].map((stat, index) => (
+            <div key={index} className="bg-white rounded-3xl p-6 text-center shadow-md hover:shadow-lg transition-all">
+              <div className="text-4xl font-black text-[#ebd00b] mb-2">{stat.number}</div>
+              <div className="text-gray-600 font-medium">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Testimonianze - Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[
+            {
+              name: "Josef Cap",
+              role: "Cliente",
+              location: "Spedizione Francia",
+              quote: "Consiglio vivamente, spedizione accurata e pedana ben imballata. I pacchi sono arrivati a destinazione in perfetto stato e in tempi molto rapidi. Davvero dei professionisti, mi affiderò di nuovo a voi per le prossime spedizioni",
+              stats: ["5/5 Valutazione", "Spedizione Internazionale", "Imballaggio Professionale"]
+            },
+            {
+              name: "Mariaconcetta Tabone",
+              role: "Cliente Fedele",
+              location: "Torino",
+              quote: "Spedisco spesso pacchi da Torino ed è da un anno che usufruisco del precisissimo servizio di Very Posta Multiservice. Professionalità e affidabilità garantite.",
+              stats: ["5/5 Valutazione", "Cliente da 1 anno", "Spedizioni Regolari"]
+            },
+            {
+              name: "Andrea Papaandrea",
+              role: "Cliente",
+              location: "Servizi Multiservizi",
+              quote: "Seri, professionali, e accoglienti. Offrono una grande varietà di servizi. Consigliatissimo!",
+              stats: ["5/5 Valutazione", "Servizi Diversificati", "Professionalità"]
+            },
+            {
+              name: "Giusy Castelli",
+              role: "Cliente",
+              location: "Spedizioni Nord Italia",
+              quote: "Molto consigliato. Lo utilizzo spesso per spedizioni pacchi verso il nord Italia. Servizio impeccabile!",
+              stats: ["5/5 Valutazione", "Spedizioni Nord Italia", "Servizio Impeccabile"]
+            },
+            {
+              name: "Alessandro",
+              role: "Cliente",
+              location: "Servizi Postali",
+              quote: "Da qualche anno che utilizzo questo esercizio per le spedizioni: ottimo servizio, prezzi convenienti, personale capace e professionale. TUTTO OK!!!",
+              stats: ["5/5 Valutazione", "Cliente da anni", "Prezzi Convenienti"]
+            },
+            {
+              name: "Daniela Sardella",
+              role: "Cliente",
+              location: "Spedizione Milano",
+              quote: "Abbiamo spedito 2 valigie per Milano e siamo stati accolti calorosamente da Veronica e il suo staff. Veramente professionali e di grande serietà.",
+              stats: ["5/5 Valutazione", "Spedizione Valigie", "Staff Professionale"]
+            }
+          ].map((testimonial, index) => (
+            <div key={index} className="bg-white rounded-3xl p-8 shadow-md hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-[#ebd00b] flex items-center justify-center text-2xl font-bold text-[#1d3a6b]">
+                  {testimonial.name.charAt(0)}
+                </div>
+                <div>
+                  <div className="font-bold text-lg">{testimonial.name}</div>
+                  <div className="text-gray-500">{testimonial.role}</div>
+                  <div className="text-sm text-gray-400">{testimonial.location}</div>
+                </div>
+              </div>
+              
+              <div className="text-gray-600 mb-6 italic">
+                &ldquo;{testimonial.quote}&rdquo;
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {testimonial.stats.map((stat, i) => (
+                  <div key={i} className="bg-[#f6f7fb] text-[#1d3a6b] px-3 py-1 rounded-full text-sm font-medium">
+                    {stat}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Testimonianze - Mobile Carousel */}
+        <div className="md:hidden">
+          <Swiper
+            modules={[Pagination]}
+            spaceBetween={20}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            className="pb-10"
+          >
+            {[
+              {
+                name: "Josef Cap",
+                role: "Cliente",
+                location: "Spedizione Francia",
+                quote: "Consiglio vivamente, spedizione accurata e pedana ben imballata. I pacchi sono arrivati a destinazione in perfetto stato e in tempi molto rapidi. Davvero dei professionisti, mi affiderò di nuovo a voi per le prossime spedizioni",
+                stats: ["5/5 Valutazione", "Spedizione Internazionale", "Imballaggio Professionale"]
+              },
+              {
+                name: "Mariaconcetta Tabone",
+                role: "Cliente Fedele",
+                location: "Torino",
+                quote: "Spedisco spesso pacchi da Torino ed è da un anno che usufruisco del precisissimo servizio di Very Posta Multiservice. Professionalità e affidabilità garantite.",
+                stats: ["5/5 Valutazione", "Cliente da 1 anno", "Spedizioni Regolari"]
+              },
+              {
+                name: "Andrea Papaandrea",
+                role: "Cliente",
+                location: "Servizi Multiservizi",
+                quote: "Seri, professionali, e accoglienti. Offrono una grande varietà di servizi. Consigliatissimo!",
+                stats: ["5/5 Valutazione", "Servizi Diversificati", "Professionalità"]
+              },
+              {
+                name: "Giusy Castelli",
+                role: "Cliente",
+                location: "Spedizioni Nord Italia",
+                quote: "Molto consigliato. Lo utilizzo spesso per spedizioni pacchi verso il nord Italia. Servizio impeccabile!",
+                stats: ["5/5 Valutazione", "Spedizioni Nord Italia", "Servizio Impeccabile"]
+              },
+              {
+                name: "Alessandro",
+                role: "Cliente",
+                location: "Servizi Postali",
+                quote: "Da qualche anno che utilizzo questo esercizio per le spedizioni: ottimo servizio, prezzi convenienti, personale capace e professionale. TUTTO OK!!!",
+                stats: ["5/5 Valutazione", "Cliente da anni", "Prezzi Convenienti"]
+              },
+              {
+                name: "Daniela Sardella",
+                role: "Cliente",
+                location: "Spedizione Milano",
+                quote: "Abbiamo spedito 2 valigie per Milano e siamo stati accolti calorosamente da Veronica e il suo staff. Veramente professionali e di grande serietà.",
+                stats: ["5/5 Valutazione", "Spedizione Valigie", "Staff Professionale"]
+              }
+            ].map((testimonial, index) => (
+              <SwiperSlide key={index}>
+                <div className="bg-white rounded-3xl p-8 shadow-md">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 rounded-full bg-[#ebd00b] flex items-center justify-center text-2xl font-bold text-[#1d3a6b]">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg">{testimonial.name}</div>
+                      <div className="text-gray-500">{testimonial.role}</div>
+                      <div className="text-sm text-gray-400">{testimonial.location}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-gray-600 mb-6 italic">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {testimonial.stats.map((stat, i) => (
+                      <div key={i} className="bg-[#f6f7fb] text-[#1d3a6b] px-3 py-1 rounded-full text-sm font-medium">
+                        {stat}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-16">
+          <button 
+            onClick={() => setShowAffiliateModal(true)}
+            className="bg-[#ebd00b] text-[#1d3a6b] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-400 transition"
+          >
+            Diventa anche tu un Affiliato
+          </button>
+        </div>
+      </section>
 
       {/* Sezione Contatti */}
       <ContactSection />
