@@ -113,6 +113,7 @@ export default function RootLayout({ children }) {
       >
         <SearchTermsProvider defaultMetadata={defaultMetadata}>
           {children}
+          <Analytics />
         </SearchTermsProvider>
       </body>
     </html>
