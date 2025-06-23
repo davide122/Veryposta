@@ -90,7 +90,7 @@ export default function HeroVeryPosta() {
     "offers": {
       "@type": "Offer",
       "name": "Franchising VeryPosta",
-      "description": "Diventa affiliato VeryPosta con un investimento iniziale contenuto di €400+IVA. Formazione completa, supporto dedicato e tecnologia inclusa."
+      "description": "Diventa affiliato VeryPosta con un investimento iniziale accessibile e competitivo. Formazione completa, supporto dedicato e tecnologia inclusa."
     },
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -126,6 +126,7 @@ export default function HeroVeryPosta() {
           "@type": "Person",
           "name": "Mariaconcetta Tabone"
         },
+        "reviewBody": "Spedisco spesso pacchi da Torino ed è da un anno che usufruisco del precisissimo servizio di Very Posta Multiservice. Professionalità e affidabilità garantite.",
         "reviewBody": "Spedisco spesso pacchi da Torino ed è da un anno che usufruisco del precisissimo servizio di Very Posta Multiservice. Professionalità e affidabilità garantite."
       }
     ]
@@ -176,22 +177,75 @@ export default function HeroVeryPosta() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    const formDataObj = new FormData(e.target);
+    
     track('Contact Form Submit', {
       hasName: !!formData.name,
       hasEmail: !!formData.email,
       hasPhone: !!formData.phone,
       hasMessage: !!formData.message
     });
-    const tipo = e.target.tipo.value;
-    const formData = new FormData(e.target);
+    const tipo = formDataObj.get("tipo");
+    
+    // Salva i dati nel database
+    try {
+      // Prepara i dati da inviare
+      const dataToSave = {
+        tipo: tipo,
+        // Dati comuni
+        name: formData.name || '',
+        email: formData.email || '',
+        phone: formData.phone || '',
+        message: `Richiesta preventivo ${tipo}`,
+        // Dati specifici per luce
+        ...(tipo === 'luce' && {
+          consumoFattura: formDataObj.get("consumoFattura"),
+          periodoFattura: formDataObj.get("periodoFattura"),
+          potenzaImpegnata: formDataObj.get("potenzaImpegnata"),
+          tariffa: formDataObj.get("tariffa"),
+          mercato: formDataObj.get("mercato")
+        }),
+        // Dati specifici per gas
+        ...(tipo === 'gas' && {
+          consumoFatturaGas: formDataObj.get("consumoFatturaGas"),
+          periodoFatturaGas: formDataObj.get("periodoFatturaGas"),
+          zonaClimatica: formDataObj.get("zonaClimatica"),
+          utilizzo: formDataObj.get("utilizzo")
+        }),
+        status: 'new',
+        created_at: new Date().toISOString()
+      };
+      
+      // Invia i dati all'API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSave),
+      });
+      
+      const result = await response.json();
+z      
+      if (response.ok) {
+        // Mostra messaggio di successo
+        alert('Richiesta inviata con successo! Ti contatteremo presto.');
+      } else {
+        console.error('Errore durante il salvataggio dei dati:', result.message);
+        alert('Si è verificato un errore. Riprova più tardi.');
+      }
+    } catch (error) {
+      console.error('Errore durante l\'invio del form:', error);
+      alert('Si è verificato un errore di connessione. Riprova più tardi.');
+    }
     
     // Calcolo per luce
     if (tipo === "luce") {
-      const consumoFattura = parseFloat(formData.get("consumoFattura"));
-      const periodoFattura = parseFloat(formData.get("periodoFattura"));
-      const potenzaImpegnata = parseFloat(formData.get("potenzaImpegnata"));
-      const tariffa = formData.get("tariffa");
-      const mercato = formData.get("mercato");
+      const consumoFattura = parseFloat(formDataObj.get("consumoFattura"));
+      const periodoFattura = parseFloat(formDataObj.get("periodoFattura"));
+      const potenzaImpegnata = parseFloat(formDataObj.get("potenzaImpegnata"));
+      const tariffa = formDataObj.get("tariffa");
+      const mercato = formDataObj.get("mercato");
       
       // Calcolo consumo giornaliero e mensile
       const consumoGiornaliero = consumoFattura / periodoFattura;
@@ -247,10 +301,10 @@ export default function HeroVeryPosta() {
     
     // Calcolo per gas
     if (tipo === "gas") {
-      const consumoFattura = parseFloat(formData.get("consumoFatturaGas"));
-      const periodoFattura = parseFloat(formData.get("periodoFatturaGas"));
-      const zonaClimatica = formData.get("zonaClimatica");
-      const utilizzo = formData.get("utilizzo");
+      const consumoFattura = parseFloat(formDataObj.get("consumoFatturaGas"));
+      const periodoFattura = parseFloat(formDataObj.get("periodoFatturaGas"));
+      const zonaClimatica = formDataObj.get("zonaClimatica");
+      const utilizzo = formDataObj.get("utilizzo");
       
       // Calcolo consumo giornaliero e mensile
       const consumoGiornaliero = consumoFattura / periodoFattura;
@@ -539,6 +593,120 @@ export default function HeroVeryPosta() {
         </div>
       </section>
 
+      {/* Chi Siamo */}
+      <section id="chi-siamo" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
+            La Nostra <span className="text-[#ebd00b]">Storia</span>
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-600 font-poppins max-w-3xl mx-auto">
+            Scopri chi siamo e la visione che guida VeryPosta verso l'innovazione nel settore dei multiservizi
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center bg-gradient-to-br from-[#f6f7fb] to-white p-8 lg:p-12 rounded-3xl shadow-lg border border-gray-100">
+          {/* Contenuto testuale */}
+          <div className="order-2 md:order-1">
+            <FadeIn direction="left">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-1.5 w-12 bg-[#ebd00b] rounded-full"></div>
+                  <h3 className="text-xl font-bold text-[#1d3a6b]">La Nostra Visione</h3>
+                </div>
+                
+                <p className="text-lg text-gray-700 font-poppins leading-relaxed">
+                  <span className="font-semibold text-[#1d3a6b]">VeryPosta</span> nasce dalla visione imprenditoriale di <span className="font-semibold text-[#1d3a6b]">Veronica Stagno</span>, che nel <span className="font-semibold">2020</span> ha dato vita a un progetto ambizioso: creare una rete di punti multiservizi innovativi in tutta Italia, capaci di rispondere alle esigenze di un mercato in continua evoluzione.
+                </p>
+                
+                <div className="flex items-center gap-3 mb-2 mt-8">
+                  <div className="h-1.5 w-12 bg-[#ebd00b] rounded-full"></div>
+                  <h3 className="text-xl font-bold text-[#1d3a6b]">La Nostra Missione</h3>
+                </div>
+                
+                <p className="text-lg text-gray-700 font-poppins leading-relaxed">
+                  Offriamo soluzioni integrate per privati e aziende, combinando servizi postali tradizionali con consulenze specializzate in ambito energetico, telefonico e amministrativo. Il nostro obiettivo è diventare il punto di riferimento per chiunque necessiti di servizi professionali, garantendo qualità, efficienza e innovazione.
+                </p>
+                
+                <div className="flex items-center gap-3 mb-2 mt-8">
+                  <div className="h-1.5 w-12 bg-[#ebd00b] rounded-full"></div>
+                  <h3 className="text-xl font-bold text-[#1d3a6b]">Cosa Ci Distingue</h3>
+                </div>
+                
+                <p className="text-lg text-gray-700 font-poppins leading-relaxed">
+                  Ciò che ci rende unici è l'approccio orientato al supporto reale degli affiliati, con formazione continua, assistenza dedicata e strumenti tecnologici all'avanguardia. Non siamo solo un franchising, ma un partner che cresce insieme ai propri affiliati, condividendo successi e sfide.
+                </p>
+                
+                <div className="mt-8 flex gap-4">
+                  <HoverEffect scale={1.05}>
+                    <button 
+                      onClick={() => scrollToSection('contatti')} 
+                      className="bg-[#ebd00b] text-[#1d3a6b] px-6 py-3 rounded-full text-base font-bold hover:bg-yellow-400 transition shadow-md flex items-center gap-2"
+                    >
+                      Contattaci
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </HoverEffect>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+          
+          {/* Immagine della titolare */}
+          <div className="flex justify-center order-1 md:order-2">
+            <ScaleIn>
+              <div className="relative w-full max-w-[350px] mx-auto">
+                <div className="absolute -top-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-[#ebd00b]/20 rounded-full blur-2xl z-0"></div>
+                <div className="absolute -bottom-6 -right-6 w-24 h-24 sm:w-32 sm:h-32 bg-[#1d3a6b]/20 rounded-full blur-2xl z-0"></div>
+                
+                <div className="relative w-full aspect-[3/4] rounded-3xl shadow-xl border-4 border-white z-10">
+                  {/* Sostituire con la foto della titolare quando disponibile */}
+                  <img
+                    src="/founder.png"
+                    alt="Veronica Stagno - Fondatrice di VeryPosta"
+                    className="rounded-2xl hover:scale-105 transition-transform duration-700 ease-in-out w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 bg-white px-4 sm:px-8 py-3 sm:py-4 rounded-full shadow-lg z-20 w-[90%] max-w-[250px]">
+                  <p className="text-center font-semibold text-[#1d3a6b] text-sm sm:text-base">
+                    Veronica Stagno
+                    <span className="block text-xs sm:text-sm text-gray-500 mt-1">Fondatrice & CEO</span>
+                  </p>
+                </div>
+              </div>
+            </ScaleIn>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          {[
+            {
+              number: "30+",
+              label: "Punti Affiliati",
+              desc: "in tutta Italia"
+            },
+            {
+              number: "1000+",
+              label: "Clienti Soddisfatti",
+              desc: "ogni mese"
+            },
+            {
+              number: "20+",
+              label: "Servizi Offerti",
+              desc: "per privati e aziende"
+            }
+          ].map((stat, index) => (
+            <div key={index} className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 text-center hover:shadow-lg transition-all">
+              <h3 className="text-4xl font-black text-[#ebd00b] mb-2">{stat.number}</h3>
+              <p className="text-xl font-bold text-[#1d3a6b] mb-1">{stat.label}</p>
+              <p className="text-gray-500">{stat.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="servizi" className="py-24 px-6 sm:px-10 lg:px-12 w-full max-w-[1400px] mx-auto text-[#1d3a6b]">
   <div className="text-center mb-16">
     <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4">
@@ -588,7 +756,7 @@ export default function HeroVeryPosta() {
       </h2>
       <ul className="space-y-6 text-lg sm:text-xl font-poppins text-gray-700">
         {[
-          "Investimento iniziale contenuto (€400 + IVA)",
+          "Investimento iniziale accessibile e competitivo",
           "Contratto triennale con rinnovo automatico",
           "Formazione completa per l'avviamento",
           "Accesso a convenzioni nazionali vantaggiose",

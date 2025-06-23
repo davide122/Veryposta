@@ -4,7 +4,7 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function ROICalculator({ isOpen, onClose }) {
   // Stati per i valori del calcolatore
-  const [initialInvestment, setInitialInvestment] = useState(400);
+  const [initialInvestment, setInitialInvestment] = useState(500);
   const [monthlyExpenses, setMonthlyExpenses] = useState(500);
   const [monthlyRevenue, setMonthlyRevenue] = useState(2000);
   const [servicesMix, setServicesMix] = useState({
@@ -145,12 +145,12 @@ export default function ROICalculator({ isOpen, onClose }) {
                   </label>
                   <input
                     type="number"
-                    min="400"
+                    min="0"
                     value={initialInvestment}
-                    onChange={(e) => setInitialInvestment(Math.max(400, parseInt(e.target.value) || 400))}
+                    onChange={(e) => setInitialInvestment(Math.max(0, parseInt(e.target.value) || 0))}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
                   />
-                  <p className="text-xs text-gray-500 mt-1">L'investimento minimo è di €400 + IVA</p>
+                  <p className="text-xs text-gray-500 mt-1">Inserisci l'investimento iniziale previsto</p>
                 </div>
                 
                 {/* Spese mensili */}

@@ -9,7 +9,7 @@ export default function FAQSection() {
   const faqData = [
     {
       question: "Quanto costa aprire un punto VeryPosta?",
-      answer: "L'investimento iniziale per aprire un punto VeryPosta è di €400 + IVA. Il contratto ha una durata triennale con rinnovo automatico e include formazione, supporto e accesso a convenzioni nazionali vantaggiose."
+      answer: "L'investimento iniziale per aprire un punto VeryPosta è accessibile e competitivo. Il contratto ha una durata triennale con rinnovo automatico e include formazione, supporto e accesso a convenzioni nazionali vantaggiose."
     },
     {
       question: "Che tipo di formazione viene fornita?",

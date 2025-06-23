@@ -150,8 +150,8 @@ export default function AffiliateDashboard() {
     const storedUserData = localStorage.getItem('userData');
     
     if (!token || !storedUserData) {
-      // Reindirizza alla home se non autenticato
-      router.push('/');
+      // Reindirizza alla pagina di accesso se non autenticato
+      router.push('/accesso');
       return;
     }
     
@@ -165,11 +165,16 @@ export default function AffiliateDashboard() {
       
       setUserData(parsedUserData);
       
+      // Verifica lo stato dell'account
+      if (parsedUserData.status === 'pending') {
+        setError('Il tuo account è in attesa di approvazione. Sarai notificato via email quando sarà attivato.');
+      }
+      
       // Carica i dati della dashboard dal backend
       fetchDashboardData(token);
     } catch (error) {
       console.error('Errore nel parsing dei dati utente:', error);
-      router.push('/');
+      router.push('/accesso');
     } finally {
       setIsLoading(false);
     }
@@ -194,6 +199,23 @@ export default function AffiliateDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-[#1d3a6b] flex flex-col">
+      {/* Messaggio di errore */}
+      {error && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 sticky top-0 z-20">
+          <div className="flex items-center">
+            <div className="py-1">
+              <svg className="h-6 w-6 text-yellow-500 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold">Attenzione</p>
+              <p className="text-sm">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -247,25 +269,11 @@ export default function AffiliateDashboard() {
                 Comunicazioni
               </button>
               <button 
-                onClick={() => setActiveTab('supplies')} 
-                className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'supplies' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
-              >
-                <span className="mr-3">📦</span>
-                Forniture
-              </button>
-              <button 
                 onClick={() => setActiveTab('support')} 
                 className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'support' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
               >
                 <span className="mr-3">🔧</span>
                 Supporto
-              </button>
-              <button 
-                onClick={() => setActiveTab('billing')} 
-                className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'billing' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
-              >
-                <span className="mr-3">💰</span>
-                Fatturazione
               </button>
               <button 
                 onClick={() => setActiveTab('portals')} 
@@ -467,82 +475,35 @@ export default function AffiliateDashboard() {
               <p className="text-gray-600 mb-8">Tutte le comunicazioni ufficiali da parte di VeryPosta.</p>
               <div className="space-y-6">
                 <div className="border-b pb-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg">Nuova promozione energia</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold">Nuova promozione energia</h3>
                     <span className="text-sm text-gray-500">15/11/2023</span>
                   </div>
                   <p className="text-gray-600 mb-4">
-                    Cari affiliati, siamo lieti di annunciare il lancio di una nuova promozione per i contratti di energia elettrica e gas. La promozione offre condizioni vantaggiose per i clienti e commissioni maggiorate per voi.
+                    È disponibile una nuova promozione per i servizi di energia. Offre condizioni vantaggiose per i clienti che sottoscrivono entro il 31 dicembre. Consulta il materiale informativo nella sezione dedicata.
                   </p>
                   <button className="text-[#1d3a6b] font-medium hover:underline">Leggi tutto →</button>
                 </div>
                 <div className="border-b pb-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg">Aggiornamento sistema</h3>
-                    <span className="text-sm text-gray-500">13/11/2023</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold">Aggiornamento sistema</h3>
+                    <span className="text-sm text-gray-500">10/11/2023</span>
                   </div>
                   <p className="text-gray-600 mb-4">
-                    Vi informiamo che il giorno 20/11/2023, dalle ore 22:00 alle ore 02:00, il sistema sarà sottoposto a manutenzione programmata per l'implementazione di nuove funzionalità. Durante questo periodo, alcuni servizi potrebbero non essere disponibili.
+                    Il sistema VeryPosta sarà aggiornato il 20/11/2023 dalle 02:00 alle 04:00. Durante questo periodo, i servizi potrebbero non essere disponibili. L'aggiornamento introduce nuove funzionalità per la gestione delle spedizioni.
                   </p>
                   <button className="text-[#1d3a6b] font-medium hover:underline">Leggi tutto →</button>
                 </div>
                 <div className="border-b pb-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg">Nuovi materiali marketing</h3>
-                    <span className="text-sm text-gray-500">10/11/2023</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold">Nuovi materiali marketing</h3>
+                    <span className="text-sm text-gray-500">05/11/2023</span>
                   </div>
                   <p className="text-gray-600 mb-4">
                     Sono disponibili nuovi materiali marketing per la promozione dei servizi VeryPosta. I materiali includono volantini, locandine e banner per i social media. Potete scaricarli dalla sezione "Materiali Marketing" o richiederli in formato cartaceo.
                   </p>
                   <button className="text-[#1d3a6b] font-medium hover:underline">Leggi tutto →</button>
                 </div>
-              </div>
-            </div>
-          )}
-  
-          {/* Supplies Tab */}
-          {activeTab === 'supplies' && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold mb-6">Gestione Forniture</h2>
-              <p className="text-gray-600 mb-8">Monitora e richiedi le forniture necessarie per il tuo punto VeryPosta.</p>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Articolo</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stato</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantità</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Azioni</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {dashboardData.supplies.map((item) => (
-                      <tr key={item.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1d3a6b]">{item.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            item.status === 'In stock'
-                              ? 'bg-green-100 text-green-800'
-                              : item.status === 'Basso'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {item.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button className="text-[#1d3a6b] font-medium hover:underline mr-4">Ordina</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="mt-8">
-                <button className="bg-[#1d3a6b] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition">
-                  Richiedi Nuova Fornitura
-                </button>
               </div>
             </div>
           )}
@@ -578,34 +539,7 @@ export default function AffiliateDashboard() {
               </div>
             </div>
           )}
-  
-          {/* Billing Tab */}
-          {activeTab === 'billing' && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold mb-6">Fatturazione</h2>
-              <div className="bg-gray-50 rounded-xl p-6 mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">Riepilogo Mensile</h3>
-                  <span className="text-sm text-gray-500">Novembre 2023</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-gray-500 text-sm">Fatturato</div>
-                    <div className="text-2xl font-bold">€2,450</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-gray-500 text-sm">Commissioni</div>
-                    <div className="text-2xl font-bold">€245</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-gray-500 text-sm">Netto</div>
-                    <div className="text-2xl font-bold">€2,205</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-  
+
           {/* Portals Tab */}
           {activeTab === 'portals' && (
             <div className="space-y-6">

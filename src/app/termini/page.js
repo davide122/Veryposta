@@ -80,14 +80,32 @@ export default function TerminiPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">9. Modifiche ai termini</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">9. Termini specifici per gli affiliati</h2>
+            <p className="text-gray-700 mb-4">
+              Gli affiliati VeryPosta sono soggetti a termini aggiuntivi specificati nel contratto di franchising, che include:
+            </p>
+            <ul className="list-disc pl-6 text-gray-700 mb-4">
+              <li>Obbligo di rispettare gli standard qualitativi e operativi del marchio VeryPosta</li>
+              <li>Utilizzo esclusivo del know-how e dei sistemi informatici forniti</li>
+              <li>Divieto di svolgere attività in concorrenza durante il periodo contrattuale</li>
+              <li>Obbligo di partecipazione ai corsi di formazione e aggiornamento</li>
+              <li>Rispetto delle linee guida per l'immagine coordinata e la comunicazione</li>
+              <li>Condizioni economiche e durata del rapporto di affiliazione</li>
+            </ul>
+            <p className="text-gray-700 mb-4">
+              Per informazioni dettagliate sul programma di affiliazione, contattare: franchising@veryposta.it
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">10. Modifiche ai termini</h2>
             <p className="text-gray-700 mb-4">
               Ci riserviamo il diritto di modificare questi termini in qualsiasi momento. Le modifiche entrano in vigore dopo la pubblicazione sul sito.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">10. Contatti</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">11. Contatti</h2>
             <p className="text-gray-700">
               Per domande sui termini e condizioni, contattare: info@veryposta.it
             </p>

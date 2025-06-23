@@ -67,6 +67,11 @@ export default function AccessoPage() {
             >
               Accedi come Affiliato
             </button>
+            <div className="mt-3 text-sm">
+              <Link href="/registrazione" className="text-[#1d3a6b] hover:underline">
+                Non hai un account? Registrati
+              </Link>
+            </div>
           </div>
 
           {/* Card Staff */}
@@ -120,7 +125,8 @@ export default function AccessoPage() {
       {showLoginModal && (
         <LoginModal 
           isOpen={showLoginModal} 
-          onClose={() => setShowLoginModal(false)} 
+          onClose={() => setShowLoginModal(false)}
+          loginType={userType}
         />
       )}
     </main>

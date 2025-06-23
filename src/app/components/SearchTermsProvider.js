@@ -48,8 +48,11 @@ export function SearchTermsProvider({ children, defaultMetadata }) {
 
   // Funzione per aggiornare dinamicamente i meta tag
   const updateMetaTags = (metadata) => {
+    // Esegui questa funzione solo lato client
     if (typeof document === 'undefined') return;
     
+    // Utilizziamo useEffect per garantire che questo codice venga eseguito solo lato client
+    // e dopo che il componente è stato montato
     // Aggiorna il titolo della pagina
     document.title = metadata.title;
     
@@ -97,6 +100,7 @@ export function SearchTermsProvider({ children, defaultMetadata }) {
 
   // Funzione per personalizzare il contenuto in base ai termini di ricerca
   const customizeContent = (searchTerms) => {
+    // Esegui questa funzione solo lato client
     if (typeof document === 'undefined') return;
     
     // Aggiungi un banner informativo per mostrare che il contenuto è personalizzato

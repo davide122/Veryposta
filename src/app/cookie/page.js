@@ -45,7 +45,24 @@ export default function CookiePage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">3. Cookie di terze parti</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">3. Cookie per affiliati</h2>
+            <p className="text-gray-700 mb-4">
+              Per gli utenti che accedono come affiliati VeryPosta, utilizziamo cookie specifici per:
+            </p>
+            <ul className="list-disc pl-6 text-gray-700 mb-4">
+              <li>Autenticazione e gestione delle sessioni nell'area riservata</li>
+              <li>Tracciamento delle attività e delle performance</li>
+              <li>Personalizzazione dell'interfaccia di gestione</li>
+              <li>Memorizzazione delle preferenze operative</li>
+              <li>Analisi dell'utilizzo della piattaforma di franchising</li>
+            </ul>
+            <p className="text-gray-700 mb-4">
+              Questi cookie sono essenziali per il funzionamento della piattaforma di gestione degli affiliati e per fornire supporto personalizzato. La loro disattivazione potrebbe compromettere l'accesso e l'utilizzo di funzionalità specifiche dell'area riservata.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">4. Cookie di terze parti</h2>
             <p className="text-gray-700 mb-4">
               Il sito utilizza anche cookie di terze parti per:
             </p>
@@ -57,7 +74,7 @@ export default function CookiePage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">4. Durata dei cookie</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">5. Durata dei cookie</h2>
             <p className="text-gray-700 mb-4">
               I cookie hanno diverse durate:
             </p>
@@ -68,7 +85,7 @@ export default function CookiePage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">5. Gestione dei cookie</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">6. Gestione dei cookie</h2>
             <p className="text-gray-700 mb-4">
               L'utente può gestire le preferenze sui cookie attraverso:
             </p>
@@ -80,14 +97,14 @@ export default function CookiePage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">6. Conseguenze del rifiuto dei cookie</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">7. Conseguenze del rifiuto dei cookie</h2>
             <p className="text-gray-700 mb-4">
               Il rifiuto dei cookie tecnici può limitare la possibilità di utilizzare il sito e impedire di accedere ad alcune funzionalità. Il rifiuto dei cookie non tecnici non pregiudica la navigazione.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">7. Aggiornamenti della policy</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">8. Aggiornamenti della policy</h2>
             <p className="text-gray-700">
               Questa cookie policy può essere aggiornata periodicamente. Consigliamo di consultare regolarmente questa pagina per rimanere informati su eventuali modifiche.
             </p>

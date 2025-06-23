@@ -11,7 +11,7 @@ export default function BenefitsSection() {
           </h2>
           <ul className="space-y-6 text-lg sm:text-xl font-poppins text-gray-700">
             {[
-              "Investimento iniziale contenuto (€400 + IVA)",
+              "Investimento iniziale accessibile e competitivo",
               "Contratto triennale con rinnovo automatico",
               "Formazione completa per l'avviamento",
               "Accesso a convenzioni nazionali vantaggiose",

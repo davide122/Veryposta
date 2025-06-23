@@ -1,7 +1,8 @@
-import localFont from "next/font/local";
 import "./globals.css";
 import { SearchTermsProvider } from "./components/SearchTermsProvider";
 import { Analytics } from "@vercel/analytics/react"
+import localFont from "next/font/local";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -82,7 +83,8 @@ export default function RootLayout({ children }) {
         <meta name="x-seo-title" content="" />
         <meta name="x-seo-description" content="" />
         <meta name="x-seo-keywords" content="" />
-        
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -53,7 +53,7 @@ export default function VantaggiSection() {
           },
           {
             icon: "📱",
-            title: "App Dedicata",
+            title: "Web App dedicata",
             desc: "Gestisci il tuo business ovunque con la nostra app mobile intuitiva."
           },
           {

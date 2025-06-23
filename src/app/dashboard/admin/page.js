@@ -2,39 +2,262 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import ServicePanel from '../../components/ServicePanel';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [affiliates, setAffiliates] = useState([]);
+  const [isLoadingAffiliates, setIsLoadingAffiliates] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   
-  // Dati di esempio per la dashboard dell'amministratore
+  // Stato per la gestione delle comunicazioni
+  const [communicationForm, setCommunicationForm] = useState({
+    title: '',
+    message: '',
+    sendToAll: true,
+    selectedAffiliates: []
+  });
+  const [communications, setCommunications] = useState([]);
+  const [isLoadingCommunications, setIsLoadingCommunications] = useState(false);
+  
+  // Stato per i dati della dashboard dell'amministratore
   const [dashboardData, setDashboardData] = useState({
     stats: {
-      totalAffiliates: 24,
-      totalRevenue: '€58,450',
-      pendingRequests: 5,
-      conversionRate: '68%'
+      totalAffiliates: 0,
+      totalRevenue: '€0',
+      pendingRequests: 0,
+      conversionRate: '0%'
     },
-    recentAffiliateRequests: [
-      { id: 'REQ001', name: 'Mario Bianchi', location: 'Firenze', date: '2023-11-15', status: 'In attesa' },
-      { id: 'REQ002', name: 'Giulia Verdi', location: 'Bologna', date: '2023-11-14', status: 'Contattato' },
-      { id: 'REQ003', name: 'Paolo Rossi', location: 'Palermo', date: '2023-11-13', status: 'In attesa' },
-      { id: 'REQ004', name: 'Laura Neri', location: 'Bari', date: '2023-11-12', status: 'Approvato' },
-    ],
-    performanceData: [
-      { id: 'P001', name: 'Point Roma', revenue: '€4,250', services: 156, growth: '+12%' },
-      { id: 'P002', name: 'Point Milano', revenue: '€3,850', services: 142, growth: '+8%' },
-      { id: 'P003', name: 'Point Napoli', revenue: '€3,120', services: 118, growth: '+5%' },
-      { id: 'P004', name: 'Point Torino', revenue: '€2,980', services: 105, growth: '+3%' },
-    ],
+    recentAffiliateRequests: [],
+    performanceData: [],
     systemUpdates: [
       { id: 1, title: 'Aggiornamento piattaforma', description: 'Nuove funzionalità per la gestione dei servizi', date: '2023-11-20', status: 'Pianificato' },
       { id: 2, title: 'Nuovi servizi', description: 'Integrazione servizi assicurativi', date: '2023-12-01', status: 'In sviluppo' },
       { id: 3, title: 'Manutenzione database', description: 'Ottimizzazione performance', date: '2023-11-18', status: 'Pianificato' },
-    ]
+    ],
+    popularServices: []
   });
+  
+  // Funzione per caricare i dati della dashboard
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      // Carica tutti gli affiliati
+      const affiliatesResponse = await axios.get('/api/admin/affiliates', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (affiliatesResponse.data.success) {
+        const allAffiliates = affiliatesResponse.data.affiliates;
+        const pendingAffiliates = allAffiliates.filter(a => a.status === 'pending');
+        
+        // Calcola il fatturato totale (in una implementazione reale, questo verrebbe dal backend)
+        let totalRevenue = 0;
+        allAffiliates.forEach(affiliate => {
+          if (affiliate.revenue) {
+            totalRevenue += parseFloat(affiliate.revenue);
+          }
+        });
+        
+        // Calcola il tasso di conversione (affiliati attivi / totale affiliati)
+        const activeAffiliates = allAffiliates.filter(a => a.status === 'active');
+        const conversionRate = allAffiliates.length > 0 
+          ? Math.round((activeAffiliates.length / allAffiliates.length) * 100) 
+          : 0;
+        
+        // Ottieni le richieste di affiliazione recenti (pending)
+        const recentRequests = pendingAffiliates
+          .map(affiliate => ({
+            id: affiliate.id,
+            name: affiliate.name,
+            location: affiliate.city || 'N/A',
+            date: new Date(affiliate.created_at).toLocaleDateString('it-IT'),
+            status: 'In attesa'
+          }))
+          .slice(0, 5); // Prendi solo le prime 5
+        
+        // Ottieni i dati di performance degli affiliati attivi
+        const performanceData = activeAffiliates
+          .map(affiliate => ({
+            id: affiliate.id,
+            name: affiliate.business_name || affiliate.name,
+            revenue: `€${affiliate.revenue || '0'}`,
+            services: affiliate.services_count || 0,
+            growth: affiliate.growth || '+0%'
+          }))
+          .slice(0, 5); // Prendi solo i primi 5
+        
+        // Aggiorna lo stato della dashboard
+        setDashboardData(prev => ({
+          ...prev,
+          stats: {
+            totalAffiliates: allAffiliates.length,
+            totalRevenue: `€${totalRevenue.toFixed(2)}`,
+            pendingRequests: pendingAffiliates.length,
+            conversionRate: `${conversionRate}%`
+          },
+          recentAffiliateRequests: recentRequests,
+          performanceData: performanceData
+        }));
+      }
+      
+      // Carica i servizi più popolari (in una implementazione reale, questo verrebbe da un endpoint dedicato)
+      const servicesResponse = await axios.get('/api/services', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (servicesResponse.data.success) {
+        // Simula i servizi più popolari ordinandoli per un criterio (in questo caso, alfabetico)
+        // In un'implementazione reale, si ordinerebbe per numero di utilizzi o altro criterio di popolarità
+        const popularServices = servicesResponse.data.data
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .slice(0, 5) // Prendi solo i primi 5
+          .map(service => ({
+            id: service.id,
+            name: service.name,
+            category: service.category,
+            usageCount: Math.floor(Math.random() * 100) + 1 // Simulazione del conteggio utilizzi
+          }));
+        
+        setDashboardData(prev => ({
+          ...prev,
+          popularServices
+        }));
+      }
+      
+    } catch (error) {
+      console.error('Errore durante il caricamento dei dati della dashboard:', error);
+    }
+  };
+
+  // Funzione per caricare gli affiliati dal backend
+  const fetchAffiliates = async (status = 'all') => {
+    setIsLoadingAffiliates(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const url = status === 'all' 
+        ? '/api/admin/affiliates' 
+        : `/api/admin/affiliates?status=${status}`;
+      
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        setAffiliates(response.data.affiliates);
+        // Aggiorna anche il conteggio delle richieste in attesa nel dashboard
+        const pendingCount = response.data.affiliates.filter(a => a.status === 'pending').length;
+        setDashboardData(prev => ({
+          ...prev,
+          stats: {
+            ...prev.stats,
+            pendingRequests: pendingCount
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Errore durante il caricamento degli affiliati:', error);
+      setErrorMessage('Errore durante il caricamento degli affiliati. Riprova più tardi.');
+    } finally {
+      setIsLoadingAffiliates(false);
+    }
+  };
+
+  // Funzione per caricare le comunicazioni inviate
+  const fetchCommunications = async () => {
+    setIsLoadingCommunications(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get('/api/admin/communications', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        setCommunications(response.data.data.communications);
+      }
+    } catch (error) {
+      console.error('Errore durante il caricamento delle comunicazioni:', error);
+      setErrorMessage('Errore durante il caricamento delle comunicazioni. Riprova più tardi.');
+    } finally {
+      setIsLoadingCommunications(false);
+    }
+  };
+
+  // Funzione per inviare una nuova comunicazione
+  const sendCommunication = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      const payload = {
+        title: communicationForm.title,
+        message: communicationForm.message,
+        affiliate_ids: communicationForm.sendToAll ? [] : communicationForm.selectedAffiliates
+      };
+      
+      const response = await axios.post('/api/admin/communications', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        setSuccessMessage('Comunicazione inviata con successo!');
+        // Reset del form
+        setCommunicationForm({
+          title: '',
+          message: '',
+          sendToAll: true,
+          selectedAffiliates: []
+        });
+        // Ricarica le comunicazioni
+        fetchCommunications();
+      }
+    } catch (error) {
+      console.error('Errore durante l\'invio della comunicazione:', error);
+      setErrorMessage('Errore durante l\'invio della comunicazione. Riprova più tardi.');
+    }
+  };
+
+  // Funzione per aggiornare lo stato di un affiliato
+  const updateAffiliateStatus = async (affiliateId, newStatus) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.patch('/api/admin/affiliates', 
+        { id: affiliateId, status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+      
+      if (response.data.success) {
+        // Aggiorna la lista degli affiliati
+        setAffiliates(prevAffiliates => 
+          prevAffiliates.map(affiliate => 
+            affiliate.id === affiliateId 
+              ? { ...affiliate, status: newStatus } 
+              : affiliate
+          )
+        );
+        
+        setSuccessMessage(`Stato dell'affiliato aggiornato con successo a "${newStatus}".`);
+        
+        // Nascondi il messaggio dopo 3 secondi
+        setTimeout(() => setSuccessMessage(''), 3000);
+        
+        // Aggiorna anche il conteggio delle richieste in attesa
+        fetchAffiliates(statusFilter);
+      } else {
+        setErrorMessage(response.data.message || 'Errore durante l\'aggiornamento dello stato');
+      }
+    } catch (error) {
+      console.error('Errore durante l\'aggiornamento dello stato:', error);
+      setErrorMessage('Errore durante l\'aggiornamento dello stato dell\'affiliato');
+    }
+  };
 
   useEffect(() => {
     // Verifica se l'utente è autenticato
@@ -42,29 +265,46 @@ export default function AdminDashboard() {
     const storedUserData = localStorage.getItem('userData');
     
     if (!token || !storedUserData) {
-      // Reindirizza alla home se non autenticato
-      router.push('/');
+      router.push('/accesso');
       return;
     }
     
     try {
       const parsedUserData = JSON.parse(storedUserData);
-      // Verifica se l'utente è un amministratore
+      // Verifica se l'utente è un admin
       if (parsedUserData.role !== 'admin') {
         router.push(`/dashboard/${parsedUserData.role}`);
         return;
       }
       
-      setUserData(parsedUserData);
+      // Carica i dati dell'utente
+      const fetchUserData = async () => {
+        try {
+          const response = await axios.get('/api/auth', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.data.success) {
+            setUserData(response.data.user);
+          } else {
+            router.push('/accesso');
+          }
+        } catch (error) {
+          console.error('Errore durante il recupero dei dati utente:', error);
+          router.push('/accesso');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchUserData();
+      fetchDashboardData();
+      fetchAffiliates();
+      fetchCommunications();
     } catch (error) {
       console.error('Errore nel parsing dei dati utente:', error);
-      router.push('/');
+      router.push('/accesso');
     }
-    
-    setIsLoading(false);
-    
-    // In un'implementazione reale, qui si caricherebbero i dati dal backend
-    // fetchDashboardData(token);
   }, [router]);
 
   const handleLogout = () => {
@@ -126,17 +366,10 @@ export default function AdminDashboard() {
                   Panoramica
                 </button>
                 <button 
-                  onClick={() => setActiveTab('franchising')} 
-                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'franchising' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="mr-3">🏢</span>
-                  Franchising
-                </button>
-                <button 
                   onClick={() => setActiveTab('affiliates')} 
                   className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'affiliates' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
                 >
-                  <span className="mr-3">🏪</span>
+                  <span className="mr-3">👥</span>
                   Affiliati
                 </button>
                 <button 
@@ -146,26 +379,19 @@ export default function AdminDashboard() {
                   <span className="mr-3">🛠️</span>
                   Servizi
                 </button>
-                <Link 
-                  href="/dashboard/contatti"
-                  className="w-full text-left px-4 py-2 rounded-lg flex items-center hover:bg-gray-50"
-                >
-                  <span className="mr-3">✉️</span>
-                  Gestione Contatti
-                </Link>
                 <button 
-                  onClick={() => setActiveTab('finance')} 
-                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'finance' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
+                  onClick={() => setActiveTab('communications')} 
+                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'communications' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
                 >
-                  <span className="mr-3">💰</span>
-                  Finanza
+                  <span className="mr-3">📨</span>
+                  Comunicazioni
                 </button>
                 <button 
-                  onClick={() => setActiveTab('marketing')} 
-                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'marketing' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
+                  onClick={() => setActiveTab('contacts')} 
+                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'contacts' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
                 >
-                  <span className="mr-3">📢</span>
-                  Marketing
+                  <span className="mr-3">📞</span>
+                  Gestione Contatti
                 </button>
                 <button 
                   onClick={() => setActiveTab('system')} 
@@ -173,13 +399,6 @@ export default function AdminDashboard() {
                 >
                   <span className="mr-3">⚙️</span>
                   Sistema
-                </button>
-                <button 
-                  onClick={() => setActiveTab('users')} 
-                  className={`w-full text-left px-4 py-2 rounded-lg flex items-center ${activeTab === 'users' ? 'bg-[#ebd00b] text-[#1d3a6b] font-medium' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="mr-3">👥</span>
-                  Utenti
                 </button>
               </nav>
             </div>
@@ -287,6 +506,53 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Popular Services */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-xl font-bold mb-4">Servizi Più Utilizzati</h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilizzi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {dashboardData.popularServices && dashboardData.popularServices.length > 0 ? (
+                          dashboardData.popularServices.map((service, index) => (
+                            <tr key={index}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{service.id}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">{service.name}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  service.category === 'energy' ? 'bg-yellow-100 text-yellow-800' :
+                                  service.category === 'telecom' ? 'bg-blue-100 text-blue-800' :
+                                  service.category === 'spid' ? 'bg-purple-100 text-purple-800' :
+                                  service.category === 'postal' ? 'bg-green-100 text-green-800' :
+                                  service.category === 'shipping' ? 'bg-red-100 text-red-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {service.category}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">{service.usageCount}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">Nessun servizio disponibile</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 text-right">
+                    <button onClick={() => setActiveTab('services')} className="text-[#1d3a6b] hover:text-[#ebd00b] text-sm font-medium">Gestisci servizi →</button>
+                  </div>
+                </div>
+
                 {/* System Updates */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-xl font-bold mb-4">Aggiornamenti di Sistema</h2>
@@ -327,11 +593,11 @@ export default function AdminDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="bg-gray-50 rounded-xl p-6">
-                    <h3 className="font-semibold text-lg mb-4">Richieste di Affiliazione</h3>
+                    <h3 className="font-semibold text-lg mb-4">Richiesta di Affiliazione</h3>
                     <div className="flex justify-between items-center mb-4">
                       <div>
                         <div className="text-3xl font-bold">{dashboardData.stats.pendingRequests}</div>
-                        <div className="text-sm text-gray-500">Richieste in attesa</div>
+                        <div className="text-sm text-gray-500">Richiesta in attesa</div>
                       </div>
                       <button className="text-[#1d3a6b] hover:text-[#ebd00b] text-sm font-medium">
                         Gestisci →
@@ -359,7 +625,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 
-                <h3 className="font-semibold text-lg mb-4">Richieste Recenti</h3>
+                <h3 className="font-semibold text-lg mb-4">Richiesta Recenti</h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead>
@@ -424,6 +690,269 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {/* Services Tab */}
+            {activeTab === 'services' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold">Gestione Servizi</h2>
+                </div>
+                
+                {/* Integrazione del ServicePanel */}
+                <ServicePanel userRole="admin" />
+              </div>
+            )}
+
+            {activeTab === 'affiliates' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold">Gestione Affiliati</h2>
+                  <div className="flex space-x-3">
+                    <select 
+                      value={statusFilter} 
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ebd00b]"
+                    >
+                      <option value="all">Tutti gli stati</option>
+                      <option value="pending">In attesa</option>
+                      <option value="active">Attivi</option>
+                      <option value="suspended">Sospesi</option>
+                    </select>
+                    <button 
+                      onClick={() => fetchAffiliates(statusFilter)}
+                      className="bg-[#1d3a6b] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition"
+                    >
+                      Aggiorna
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Messaggi di successo o errore */}
+                {successMessage && (
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {successMessage}
+                  </div>
+                )}
+                
+                {errorMessage && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {errorMessage}
+                  </div>
+                )}
+                
+                {isLoadingAffiliates ? (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 border-4 border-[#ebd00b] border-t-[#1d3a6b] rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Caricamento affiliati...</p>
+                  </div>
+                ) : affiliates.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Nessun affiliato trovato con i filtri selezionati.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Città</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Registrazione</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stato</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Azioni</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {affiliates.map((affiliate) => (
+                          <tr key={affiliate.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{affiliate.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{affiliate.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{affiliate.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{affiliate.city}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {new Date(affiliate.created_at).toLocaleDateString('it-IT')}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${affiliate.status === 'active' ? 'bg-green-100 text-green-800' : affiliate.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                                {affiliate.status === 'active' ? 'Attivo' : affiliate.status === 'pending' ? 'In attesa' : 'Sospeso'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                              {affiliate.status === 'pending' && (
+                                <button 
+                                  onClick={() => updateAffiliateStatus(affiliate.id, 'active')}
+                                  className="text-green-600 hover:text-green-800 font-medium"
+                                >
+                                  Approva
+                                </button>
+                              )}
+                              {affiliate.status === 'active' && (
+                                <button 
+                                  onClick={() => updateAffiliateStatus(affiliate.id, 'suspended')}
+                                  className="text-red-600 hover:text-red-800 font-medium"
+                                >
+                                  Sospendi
+                                </button>
+                              )}
+                              {affiliate.status === 'suspended' && (
+                                <button 
+                                  onClick={() => updateAffiliateStatus(affiliate.id, 'active')}
+                                  className="text-green-600 hover:text-green-800 font-medium"
+                                >
+                                  Riattiva
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Communications Tab */}
+            {activeTab === 'communications' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold">Comunicazioni agli Affiliati</h2>
+                </div>
+                
+                {/* Form per inviare una nuova comunicazione */}
+                <div className="bg-gray-50 rounded-xl p-6 mb-8">
+                  <h3 className="font-semibold mb-4">Invia Nuova Comunicazione</h3>
+                  
+                  {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                      {successMessage}
+                    </div>
+                  )}
+                  
+                  {errorMessage && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                      {errorMessage}
+                    </div>
+                  )}
+                  
+                  <form onSubmit={sendCommunication}>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Titolo</label>
+                      <input 
+                        type="text" 
+                        value={communicationForm.title}
+                        onChange={(e) => setCommunicationForm({...communicationForm, title: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#ebd00b] focus:border-[#ebd00b]"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Messaggio</label>
+                      <textarea 
+                        value={communicationForm.message}
+                        onChange={(e) => setCommunicationForm({...communicationForm, message: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#ebd00b] focus:border-[#ebd00b] h-32"
+                        required
+                      ></textarea>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          checked={communicationForm.sendToAll}
+                          onChange={(e) => setCommunicationForm({...communicationForm, sendToAll: e.target.checked})}
+                          className="h-4 w-4 text-[#ebd00b] focus:ring-[#ebd00b] border-gray-300 rounded"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">Invia a tutti gli affiliati attivi</span>
+                      </label>
+                    </div>
+                    
+                    {!communicationForm.sendToAll && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Seleziona Affiliati</label>
+                        <select 
+                          multiple
+                          value={communicationForm.selectedAffiliates}
+                          onChange={(e) => {
+                            const options = [...e.target.selectedOptions];
+                            const values = options.map(option => option.value);
+                            setCommunicationForm({...communicationForm, selectedAffiliates: values});
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#ebd00b] focus:border-[#ebd00b] h-32"
+                        >
+                          {affiliates
+                            .filter(affiliate => affiliate.status === 'active')
+                            .map(affiliate => (
+                              <option key={affiliate.id} value={affiliate.id}>
+                                {affiliate.business_name || affiliate.name} ({affiliate.email})
+                              </option>
+                            ))
+                          }
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Tieni premuto Ctrl (o Cmd su Mac) per selezionare più affiliati</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-end">
+                      <button 
+                        type="submit" 
+                        className="bg-[#1d3a6b] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition"
+                      >
+                        Invia Comunicazione
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                
+                {/* Lista delle comunicazioni inviate */}
+                <h3 className="font-semibold mb-4">Comunicazioni Inviate</h3>
+                
+                {isLoadingCommunications ? (
+                  <div className="text-center py-4">
+                    <p>Caricamento comunicazioni...</p>
+                  </div>
+                ) : communications.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titolo</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Invio</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destinatari</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lette</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {communications.map((comm, index) => (
+                          <tr key={index}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="font-medium text-[#1d3a6b]">{comm.title}</div>
+                              <div className="text-sm text-gray-500 truncate max-w-xs">{comm.message}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(comm.first_sent).toLocaleDateString('it-IT')}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {comm.recipient_count}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {comm.read_count}/{comm.recipient_count} ({Math.round((comm.read_count / comm.recipient_count) * 100)}%)
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-lg p-8 text-center">
+                    <p className="text-gray-500">Nessuna comunicazione inviata</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* System Tab */}
             {activeTab === 'system' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
@@ -476,7 +1005,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
-
           </div> {/* Fine Main Content Area */}
         </div> {/* Fine Grid */}
       </div> {/* Fine max-w container */}

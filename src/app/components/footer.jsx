@@ -19,7 +19,7 @@ export default function Footer() {
     {
       title: "Azienda",
       links: [
-        { label: "Chi Siamo", href: "/#perche" },
+        { label: "Chi Siamo", href: "/#chi-siamo" },
         { label: "Diventa Affiliato", href: "/#diventa-point" },
         { label: "FAQ", href: "/#faq" }
       ]

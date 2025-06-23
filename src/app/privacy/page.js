@@ -81,14 +81,30 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">8. Contatti</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">8. Trattamento dati degli affiliati</h2>
+            <p className="text-gray-700 mb-4">
+              Per gli affiliati VeryPosta, raccogliamo e trattiamo ulteriori dati personali necessari per la gestione del rapporto di franchising:
+            </p>
+            <ul className="list-disc pl-6 text-gray-700 mb-4">
+              <li>Dati anagrafici e fiscali completi</li>
+              <li>Informazioni bancarie per pagamenti e transazioni</li>
+              <li>Dati relativi alla formazione e alle performance</li>
+              <li>Documentazione contrattuale e comunicazioni ufficiali</li>
+            </ul>
+            <p className="text-gray-700 mb-4">
+              Questi dati vengono trattati per la gestione del rapporto contrattuale, l'erogazione dei servizi di supporto, la formazione, e l'adempimento degli obblighi fiscali e legali. I dati degli affiliati sono conservati per tutta la durata del rapporto contrattuale e per il periodo successivo richiesto dalle normative fiscali e legali.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">9. Contatti</h2>
             <p className="text-gray-700 mb-4">
               Per esercitare i propri diritti o per qualsiasi domanda sulla privacy, gli utenti possono contattarci all'indirizzo email: privacy@veryposta.it
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">9. Modifiche all'informativa</h2>
+            <h2 className="text-2xl font-semibold text-[#1d3a6b] mb-4">10. Modifiche all'informativa</h2>
             <p className="text-gray-700">
               Ci riserviamo il diritto di modificare questa informativa sulla privacy in qualsiasi momento. Le modifiche verranno pubblicate su questa pagina con la data di ultima modifica.
             </p>

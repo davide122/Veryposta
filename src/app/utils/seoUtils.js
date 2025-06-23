@@ -47,12 +47,12 @@ export function getDynamicMetadata(searchTerms, defaultMetadata) {
     },
     'aprire franchising': {
       title: 'Come Aprire un Franchising VeryPosta | Guida Completa',
-      description: 'Scopri come aprire un franchising VeryPosta con soli €400+IVA. Formazione, supporto e tecnologia inclusi per avviare la tua attività multiservizi.',
+      description: 'Scopri come aprire un franchising VeryPosta. Formazione, supporto e tecnologia inclusi per avviare la tua attività multiservizi.',
       keywords: ['aprire franchising', 'avviare attività multiservizi', 'franchising economico', 'VeryPosta']
     },
     'costo franchising': {
       title: 'Costo Franchising VeryPosta | Investimento Contenuto',
-      description: 'Investi solo €400+IVA per aprire un franchising VeryPosta. Scopri tutti i vantaggi economici e il supporto incluso nel nostro modello di business.',
+      description: 'Investi in un franchising VeryPosta. Scopri tutti i vantaggi economici e il supporto incluso nel nostro modello di business.',
       keywords: ['costo franchising', 'investimento franchising', 'franchising economico', 'VeryPosta costi']
     },
     

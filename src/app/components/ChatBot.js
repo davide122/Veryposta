@@ -26,8 +26,8 @@ export default function ChatBot() {
   // Risposte predefinite basate su parole chiave
   const botResponses = [
     { keywords: ['ciao', 'salve', 'buongiorno', 'buonasera', 'hey'], response: 'Ciao! Sono l\'assistente virtuale di VeryPosta. Come posso aiutarti oggi?' },
-    { keywords: ['franchising', 'affiliazione', 'affiliato', 'aprire', 'punto'], response: 'Il franchising VeryPosta richiede un investimento iniziale contenuto di €400 + IVA. Offriamo formazione completa, supporto costante e accesso a convenzioni nazionali vantaggiose. Vuoi maggiori informazioni?' },
-    { keywords: ['costo', 'prezzo', 'investimento', 'quanto', 'spesa'], response: 'L\'investimento iniziale per aprire un punto VeryPosta è di €400 + IVA. Il contratto ha durata triennale con rinnovo automatico. Desideri parlare con un nostro consulente?' },
+    { keywords: ['franchising', 'affiliazione', 'affiliato', 'aprire', 'punto'], response: 'Il franchising VeryPosta richiede un investimento iniziale contenuto. Offriamo formazione completa, supporto costante e accesso a convenzioni nazionali vantaggiose. Vuoi maggiori informazioni?' },
+    { keywords: ['costo', 'prezzo', 'investimento', 'quanto', 'spesa'], response: 'L\'investimento iniziale per aprire un punto VeryPosta è accessibile e competitivo. Il contratto ha durata triennale con rinnovo automatico. Desideri parlare con un nostro consulente?' },
     { keywords: ['servizi', 'offerta', 'cosa', 'offrite'], response: 'VeryPosta offre numerosi servizi: spedizioni, servizi postali, energia, telefonia, CAF/Patronato, SPID, firme digitali, PEC e molti altri. Quale servizio ti interessa in particolare?' },
     { keywords: ['formazione', 'corso', 'imparare', 'insegnare'], response: 'Offriamo formazione completa per l\'avviamento e corsi sempre aggiornati su aspetti legali, operativi e digitali. La formazione è inclusa nel pacchetto di affiliazione.' },
     { keywords: ['contatto', 'telefono', 'email', 'chiamare', 'parlare'], response: 'Puoi contattarci compilando il modulo nella sezione contatti del sito, oppure scrivendo a info@veryposta.it. Un nostro consulente ti ricontatterà al più presto.' },
